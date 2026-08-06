@@ -374,6 +374,42 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   document.getElementById('success').style.display = 'block';
   document.getElementById('success').scrollIntoView({behavior:'smooth', block:'center'});
 });
+
+/* ===== 订单提交 → Supabase ===== */
+const SUPABASE_URL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
+
+document.getElementById('orderForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = this.querySelector('.submit-btn');
+  btn.disabled = true; btn.textContent = '提交中…';
+  try{
+    const resp = await fetch(SUPABASE_URL + '/rest/v1/orders', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        service: document.getElementById('svc').value,
+        style: document.getElementById('style').value || '',
+        detail: document.getElementById('detail').value || '',
+        contact: document.getElementById('contact').value.trim()
+      })
+    });
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    showToast('需求已提交！请扫码付款并加微信');
+    this.reset();
+    document.getElementById('success').scrollIntoView({behavior:'smooth'});
+  }catch(err){
+    console.error(err);
+    showToast('提交失败，请直接加微信：k638666798k');
+  }finally{
+    btn.disabled = false; btn.textContent = '提交需求';
+  }
+});
 </script>
 </body>
 </html>

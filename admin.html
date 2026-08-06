@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sarkura 订单管理后台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+body{background:#f1f5f9;min-height:100vh}
+.hd{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.hd h1{font-size:18px;font-weight:700}
+.hd .badge{background:rgba(255,255,255,.2);padding:3px 10px;border-radius:999px;font-size:12px}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px}
+.card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.card .time{font-size:12px;color:#94a3b8}
+.tag{font-size:11px;padding:2px 10px;border-radius:999px;font-weight:600}
+.tag.new{background:#fee2e2;color:#dc2626}
+.tag.contacted{background:#fef3c7;color:#d97706}
+.tag.done{background:#dcfce7;color:#16a34a}
+.row{font-size:14px;color:#334155;margin-bottom:5px;line-height:1.5}
+.row b{color:#0f172a}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btns button{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.btns .c{background:#fef3c7;color:#b45309}
+.btns .d{background:#dcfce7;color:#15803d}
+.empty{text-align:center;color:#94a3b8;padding:50px 0;font-size:14px}
+.login{max-width:380px;margin:80px auto;background:#fff;border-radius:16px;padding:30px 24px;box-shadow:0 10px 30px rgba(30,41,59,.08)}
+.login h2{font-size:20px;margin-bottom:20px;text-align:center}
+.login input{width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none}
+.login input:focus{border-color:#f59e0b}
+.login button{width:100%;padding:13px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
+.login .err{color:#dc2626;font-size:13px;text-align:center;margin-top:10px;display:none}
+.btn-plain{background:none;border:none;color:rgba(255,255,255,.9);font-size:14px;cursor:pointer;text-decoration:underline}
+.stat{display:flex;gap:8px;margin-bottom:14px}
+.stat div{flex:1;background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid #e2e8f0}
+.stat .n{font-size:22px;font-weight:800;color:#0f172a}
+.stat .l{font-size:12px;color:#64748b}
+</style>
+</head>
+<body>
+<div class="hd" id="hd" style="display:none">
+  <h1>📋 Sarkura 订单管理</h1>
+  <button class="btn-plain" onclick="logout()">退出</button>
+</div>
+
+<!-- 登录 -->
+<div class="login" id="loginView">
+  <h2>🔐 管理员登录</h2>
+  <input type="email" id="loginEmail" placeholder="管理员邮箱">
+  <input type="password" id="loginPwd" placeholder="密码">
+  <button onclick="login()">登 录</button>
+  <div class="err" id="loginErr">邮箱或密码错误</div>
+</div>
+
+<!-- 订单列表 -->
+<div class="wrap" id="adminView" style="display:none">
+  <div class="stat">
+    <div><div class="n" id="stNew">0</div><div class="l">新订单</div></div>
+    <div><div class="n" id="stContacted">0</div><div class="l">已联系</div></div>
+    <div><div class="n" id="stDone">0</div><div class="l">已完成</div></div>
+  </div>
+  <div id="list"></div>
+  <div class="empty" id="empty" style="display:none">暂无订单，客户提交后会显示在这里</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
+
+function api(path, opts){
+  return fetch(SUPABASE_URL + path, Object.assign({
+    headers: {'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'}
+  }, opts));
+}
+
+async function login(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPwd').value;
+  document.getElementById('loginErr').style.display = 'none';
+  try{
+    const r = await api('/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      body: JSON.stringify({email, password: pwd})
+    });
+    if(!r.ok) throw new Error('bad login');
+    const d = await r.json();
+    localStorage.setItem('sb_token', d.access_token);
+    showAdmin();
+  }catch(e){
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+async function loadOrders(){
+  const token = localStorage.getItem('sb_token');
+  if(!token) { showLogin(); return; }
+  const r = await fetch(SUPABASE_URL + '/rest/v1/orders?select=*&order=created_at.desc', {
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token}
+  });
+  if(r.status === 401){ localStorage.removeItem('sb_token'); showLogin(); return; }
+  const orders = await r.json();
+  render(orders);
+}
+
+function render(orders){
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  document.getElementById('stNew').textContent = orders.filter(o=>o.status==='new').length;
+  document.getElementById('stContacted').textContent = orders.filter(o=>o.status==='contacted').length;
+  document.getElementById('stDone').textContent = orders.filter(o=>o.status==='done').length;
+  if(!orders.length){ document.getElementById('empty').style.display='block'; return; }
+  document.getElementById('empty').style.display='none';
+  const tagMap = {new:'新订单', contacted:'已联系', done:'已完成'};
+  const clsMap = {new:'new', contacted:'contacted', done:'done'};
+  orders.forEach(o=>{
+    const t = new Date(o.created_at);
+    const time = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="top"><span class="time">${time}</span><span class="tag ${clsMap[o.status]}">${tagMap[o.status]||o.status}</span></div>
+      <div class="row"><b>款式：</b>${o.service}</div>
+      <div class="row"><b>图案：</b>${o.style||'—'}</div>
+      <div class="row"><b>说明：</b>${o.detail||'—'}</div>
+      <div class="row"><b>联系方式：</b>${o.contact}</div>
+      <div class="btns">
+        <button class="c" onclick="setStatus(${o.id},'contacted')">✓ 已联系</button>
+        <button class="d" onclick="setStatus(${o.id},'done')">✓ 已完成</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+async function setStatus(id, status){
+  const token = localStorage.getItem('sb_token');
+  await fetch(SUPABASE_URL + '/rest/v1/orders?id=eq.' + id, {
+    method: 'PATCH',
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal'},
+    body: JSON.stringify({status})
+  });
+  loadOrders();
+}
+
+function logout(){ localStorage.removeItem('sb_token'); showLogin(); }
+function showAdmin(){ document.getElementById('loginView').style.display='none'; document.getElementById('adminView').style.display='block'; document.getElementById('hd').style.display='flex'; loadOrders(); }
+function showLogin(){ document.getElementById('loginView').style.display='block'; document.getElementById('adminView').style.display='none'; document.getElementById('hd').style.display='none'; }
+
+if(localStorage.getItem('sb_token')) showAdmin(); else showLogin();
+</script>
+</body>
+</html>
