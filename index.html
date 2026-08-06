@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sarkura工作室 — 吹风机卡定制</title>
+<meta name="description" content="Sarkura工作室 — 吹风机卡定制，包您满意，用不了包退包换。经典款59.9 / 精品款99.9 / 豪华款125.99，微信 k638666798k">
+<style>
+:root{
+  --brand:#f59e0b;
+  --brand-dark:#d97706;
+  --ink:#1e293b;
+  --ink-2:#475569;
+  --ink-3:#94a3b8;
+  --bg:#ffffff;
+  --bg-soft:#fffbeb;
+  --line:#e2e8f0;
+  --ok:#10b981;
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonicOS Sans SC","Microsoft YaHei","Noto Sans SC",sans-serif;color:var(--ink);background:var(--bg);line-height:1.7}
+img{max-width:100%}
+a{color:var(--brand-dark);text-decoration:none}
+.container{max-width:960px;margin:0 auto;padding:0 20px}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .3s}
+.nav.scrolled{border-bottom-color:var(--line)}
+.nav .container{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:800;font-size:18px;letter-spacing:.5px}
+.logo span{color:var(--brand-dark)}
+.nav-links{display:flex;gap:22px;font-size:14px;color:var(--ink-2)}
+.nav-links a:hover{color:var(--brand-dark)}
+
+.hero{background:linear-gradient(135deg,#451a03 0%,#78350f 55%,#b45309 100%);color:#fff;padding:130px 0 90px;text-align:center;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.3),transparent 70%);top:-180px;right:-140px}
+.hero .container{position:relative;z-index:1}
+.hero h1{font-size:clamp(30px,6vw,46px);font-weight:800;line-height:1.3;margin-bottom:16px}
+.hero p{font-size:clamp(15px,3.5vw,18px);color:rgba(255,255,255,.9);max-width:560px;margin:0 auto 34px}
+.hero .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
+.hero .badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:6px 16px;border-radius:999px;font-size:13px}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 30px;border-radius:999px;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#fff;color:#92400e}
+.btn-primary:hover{box-shadow:0 8px 24px rgba(255,255,255,.25)}
+.btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn-ghost:hover{background:rgba(255,255,255,.2)}
+
+section{padding:72px 0}
+section:nth-child(even){background:var(--bg-soft)}
+.sec-title{text-align:center;margin-bottom:44px}
+.sec-title .tag{display:inline-block;font-size:12px;color:var(--brand-dark);background:rgba(245,158,11,.12);padding:4px 14px;border-radius:999px;font-weight:600;letter-spacing:1px;margin-bottom:12px}
+.sec-title h2{font-size:clamp(24px,5vw,32px);font-weight:800}
+.sec-title p{color:var(--ink-2);margin-top:8px;font-size:15px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 22px;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(30,41,59,.08)}
+.card .ico{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.card h3{font-size:17px;margin-bottom:8px}
+.card p{font-size:14px;color:var(--ink-2)}
+
+.price-card{border:2px solid transparent}
+.price-card.hot{border-color:var(--brand);position:relative}
+.price-card.hot::before{content:"最受欢迎";position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--brand);color:#fff;font-size:12px;padding:3px 14px;border-radius:999px;font-weight:600}
+.price{font-size:32px;font-weight:800;color:var(--brand-dark);margin:10px 0 4px}
+.price small{font-size:13px;color:var(--ink-3);font-weight:400}
+.price-card ul{list-style:none;margin:14px 0 20px;font-size:14px;color:var(--ink-2)}
+.price-card ul li{padding:5px 0;padding-left:22px;position:relative}
+.price-card ul li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
+.price-card .btn{width:100%;text-align:center;background:var(--bg-soft);color:var(--ink);border:1px solid var(--line)}
+.price-card.hot .btn{background:var(--brand);color:#fff;border:none}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;position:relative}
+.step .num{width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-bottom:12px}
+.step h4{font-size:15px;margin-bottom:6px}
+.step p{font-size:13px;color:var(--ink-2)}
+
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.case{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.case .thumb{height:150px;background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;justify-content:center;color:#b45309;font-size:13px}
+.case .body{padding:16px 18px}
+.case .body h4{font-size:15px;margin-bottom:4px}
+.case .body p{font-size:13px;color:var(--ink-2)}
+
+.order-wrap{max-width:640px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px 26px;box-shadow:0 10px 40px rgba(30,41,59,.06)}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink);outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
+.field textarea{resize:vertical;min-height:110px}
+.submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.submit-btn:active{transform:scale(.98)}
+.hint{font-size:12px;color:var(--ink-3);margin-top:10px;text-align:center}
+
+.success{display:none;text-align:center;padding:20px 10px}
+.success .check{width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,.12);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 18px}
+.success h3{font-size:20px;margin-bottom:8px}
+.success p{color:var(--ink-2);font-size:14px;margin-bottom:18px}
+.wechat-box{background:var(--bg-soft);border:1px dashed #fcd34d;border-radius:12px;padding:18px;margin-bottom:18px}
+.wechat-box .qr{width:150px;height:150px;margin:0 auto 12px;background:#fef3c7;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#b45309;font-size:12px}
+.wechat-box .id{font-size:15px;font-weight:700}
+.copy-btn{margin-top:10px;padding:8px 22px;background:#fff;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.copy-btn:active{transform:scale(.96)}
+
+.faq{max-width:640px;margin:0 auto}
+.faq-item{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;background:#fff}
+.faq-item summary{list-style:none;padding:16px 18px;font-size:15px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"+";font-size:20px;color:var(--brand-dark);transition:transform .25s}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-item .ans{padding:0 18px 16px;font-size:14px;color:var(--ink-2)}
+
+footer{background:#1c1917;color:#a8a29e;text-align:center;padding:36px 20px;font-size:13px}
+footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
+
+@media(max-width:640px){
+  .nav-links{display:none}
+  .hero{padding:110px 0 70px}
+  section{padding:56px 0}
+}
+
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:999px;font-size:14px;opacity:0;transition:all .3s;z-index:200;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container">
+    <div class="logo">Sarkura<span>工作室</span></div>
+    <div class="nav-links">
+      <a href="#services">款式</a>
+      <a href="#pricing">价格</a>
+      <a href="#process">流程</a>
+      <a href="#cases">实拍</a>
+      <a href="#order">下单</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>定制你的专属吹风机卡</h1>
+    <p>包您满意，用不了包退包换。手工定制，每一张都独一无二。</p>
+    <div class="badges">
+      <span class="badge">✅ 用不了包退包换</span>
+      <span class="badge">🎨 图案可选可定制</span>
+      <span class="badge">🚚 快速发货</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#order" class="btn btn-primary">立即下单</a>
+      <a href="#pricing" class="btn btn-ghost">查看价格</a>
+    </div>
+  </div>
+</header>
+
+<section id="services">
+  <div class="container">
+    <div class="sec-title">
+      <span class="tag">STYLES</span>
+      <h2>定制款式</h2>
+      <p>三个档位，按你的喜好选择</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="ico">🎨</div>
+        <h3>经典款</h3>
+        <p>基础定制，精选经典图案可选，简单耐看，日常使用首选。</p>
+      </div>
+      <div class="card">
+        <div class="ico">⭐</div>
+        <h3>精品款</h3>
+        <p>更多图案库，可指定配色，细节更精致，送人自用都合适。</p>
+      </div>
+      <div class="card">
+        <div class="ico">💎</div>
+        <h3>豪华款</h3>
+        <p>完全自由定制：指定图案、文字、专属设计，做你的独一无二。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="container">
+    <div class="sec-title">
+      <span class="tag">PRICING</span>
+      <h2>价格方案</h2>
+      <p>明码标价，无隐藏费用</p>
+    </div>
+    <div class="grid">
+      <div class="card price-card">
+        <h3>经典款</h3>
+        <div class="price">¥59.9 <small>起</small></div>
+        <ul>
+          <li>经典图案可选</li>
+          <li>标准材质</li>
+          <li>3 天内发货</li>
+          <li>用不了包退包换</li>
+        </ul>
+        <a href="#order" class="btn">选择此款</a>
+      </div>
+      <div class="card price-card hot">
+        <h3>精品款</h3>
+        <div class="price">¥99.9 <small>起</small></div>
+        <ul>
+          <li>图案 + 配色自选</li>
+          <li>升级材质，质感更好</li>
+          <li>2 天内发货</li>
+          <li>用不了包退包换</li>
+        </ul>
+        <a href="#order" class="btn">选择此款</a>
+      </div>
+      <div class="card price-card">
+        <h3>豪华款</h3>
+        <div class="price">¥125.99 <small>起</small></div>
+        <ul>
+          <li>完全定制：图案 / 文字 / 专属设计</li>
+          <li>精工细节，收藏级品质</li>
+          <li>优先制作发货</li>
+          <li>用不了包退包换</li>
+        </ul>
+        <a href="#order" class="btn">选择此款</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="container">
+    <div class="sec-title">
+      <span class="tag">PROCESS</span>
+      <h2>定制流程</h2>
+      <p>简单四步，轻松搞定</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h4>提交需求</h4><p>填写下方表单，选择款式，说明你的想法</p></div>
+      <div class="step"><div class="num">2</div><h4>微信确认</h4><p>加微信选图案、定细节，确认价格</p></div>
+      <div class="step"><div class="num">3</div><h4>支付制作</h4><p>付款后开始制作，完成后发货</p></div>
+      <div class="step"><div class="num">4</div><h4>收货满意</h4><p>收到货不满意？用不了包退包换</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="container">
+    <div class="sec-title">
+      <span class="tag">REAL SHOTS</span>
+      <h2>实拍展示</h2>
+      <p>真实作品，所见即所得（放上你的实拍图）</p>
+    </div>
+    <div class="cases">
+      <div class="case"><div class="thumb">【实拍图 1】</div><div class="body"><h4>作品一</h4><p>一句话描述这款的图案和配色</p></div></div>
+      <div class="case"><div class="thumb">【实拍图 2】</div><div class="body"><h4>作品二</h4><p>一句话描述这款的图案和配色</p></div></div>
+      <div class="case"><div class="thumb">【实拍图 3】</div><div class="body"><h4>作品三</h4><p>一句话描述这款的图案和配色</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="container">
+    <div class="sec-title">
+      <span class="tag">ORDER</span>
+      <h2>在线下单</h2>
+      <p>填写需求，我会尽快回复你</p>
+    </div>
+    <div class="order-wrap">
+      <form id="orderForm">
+        <div class="field">
+          <label>选择款式</label>
+          <select id="svc" required>
+            <option value="">请选择款式</option>
+            <option>经典款（¥59.9）</option>
+            <option>精品款（¥99.9）</option>
+            <option>豪华款（¥125.99）</option>
+            <option>还不确定，想先聊聊</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>想要什么图案 / 风格？</label>
+          <input type="text" id="style" placeholder="例如：可爱风 / 简约风 / 指定图案或文字…">
+        </div>
+        <div class="field">
+          <label>补充说明</label>
+          <textarea id="detail" placeholder="其他想说的：配色偏好、用途、数量、期望发货时间……"></textarea>
+        </div>
+        <div class="field">
+          <label>你的联系方式</label>
+          <input type="text" id="contact" placeholder="微信 / 手机 / QQ，方便我联系你" required>
+        </div>
+        <button type="submit" class="submit-btn">提交需求</button>
+        <p class="hint">提交后请按提示添加微信，确认图案后付款制作</p>
+      </form>
+
+      <div class="success" id="success">
+        <div class="check">✓</div>
+        <h3>需求已收到！</h3>
+        <p>接下来请添加我的微信，备注「<span id="svcName">你的款式</span>」，我会尽快跟你确认图案和细节。</p>
+        <div class="wechat-box">
+          <img src="qrcode.png" alt="微信二维码，用微信扫一扫添加" style="width:150px;height:150px;border-radius:10px;margin:0 auto 12px;display:block;background:#fef3c7;object-fit:contain">
+          <div class="id" id="wxId">微信号：k638666798k</div>
+          <button class="copy-btn" id="copyWx">复制微信号</button>
+        </div>
+        <p style="font-size:13px;color:var(--ink-3)">添加微信时请注明：网站下单</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="container">
+    <div class="sec-title">
+      <span class="tag">FAQ</span>
+      <h2>常见问题</h2>
+    </div>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>如何付款？</summary>
+        <div class="ans">加微信确认款式和价格后，通过微信/支付宝转账付款，付款后开始制作。</div>
+      </details>
+      <details class="faq-item">
+        <summary>多久发货？</summary>
+        <div class="ans">经典款 3 天内、精品款 2 天内发货，豪华款优先制作。具体以沟通为准。</div>
+      </details>
+      <details class="faq-item">
+        <summary>「用不了包退包换」是什么意思？</summary>
+        <div class="ans">收到货如果发现用不了、不适用，或与沟通不符，支持退换，放心下单。</div>
+      </details>
+      <details class="faq-item">
+        <summary>可以指定图案或文字吗？</summary>
+        <div class="ans">可以。精品款可指定配色，豪华款支持完全自由定制，包括图案、文字和专属设计。</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="brand">Sarkura工作室</div>
+  <div>吹风机卡定制 · 包您满意 · 微信：k638666798k</div>
+  <div style="margin-top:6px">© 2026 Sarkura工作室</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
+
+const toast = document.getElementById('toast');
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+document.getElementById('copyWx').addEventListener('click', () => {
+  const wx = 'k638666798k';
+  (navigator.clipboard ? navigator.clipboard.writeText(wx) : Promise.reject())
+    .then(() => showToast('微信号已复制，去微信添加吧'))
+    .catch(() => showToast('微信号：' + wx));
+});
+
+document.getElementById('orderForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const svc = document.getElementById('svc');
+  const contact = document.getElementById('contact').value.trim();
+  if(!svc.value || !contact){ showToast('请填写必填项'); return; }
+
+  document.getElementById('svcName').textContent = svc.value;
+  this.style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+  document.getElementById('success').scrollIntoView({behavior:'smooth', block:'center'});
+});
+</script>
+</body>
+</html>
