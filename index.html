@@ -7,192 +7,245 @@
 <meta name="description" content="Sarkura工作室 — 吹风机卡定制，包您满意，用不了包退包换。经典款59.9 / 精品款99.9 / 豪华款125.99，微信 k638666798k">
 <style>
 :root{
-  --bg:#0c0d11;
-  --bg-2:#121319;
-  --card:#181a21;
-  --card-2:#1e2129;
-  --line:rgba(255,255,255,.08);
-  --ink:#f2f3f5;
-  --ink-2:#a7adb8;
-  --ink-3:#6b7280;
-  --brand:#f59e0b;
-  --brand-2:#fbbf24;
-  --brand-deep:#d97706;
-  --ok:#34d399;
-  --radius:18px;
+  --brand:#ec4899;
+  --brand-2:#f9a8d4;
+  --brand-deep:#be185d;
+  --violet:#8b5cf6;
+  --ink:#2d2a3a;
+  --ink-2:#6b6580;
+  --ink-3:#9b94ad;
+  --glass-bg:linear-gradient(135deg,rgba(255,255,255,.68),rgba(255,255,255,.38));
+  --glass-border:rgba(255,255,255,.75);
+  --glass-shadow:0 8px 32px rgba(140,100,200,.14);
+  --radius:24px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonicOS Sans SC","Microsoft YaHei","Noto Sans SC",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonicOS Sans SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+  color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(90% 60% at 85% -5%, rgba(196,181,253,.55) 0%, transparent 55%),
+    radial-gradient(80% 55% at 10% 8%, rgba(249,168,212,.5) 0%, transparent 55%),
+    radial-gradient(90% 70% at 50% 115%, rgba(165,214,255,.5) 0%, transparent 55%),
+    linear-gradient(165deg,#eef4ff 0%,#fdf0f7 45%,#efe9ff 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+}
 img{max-width:100%}
-a{color:var(--brand-2);text-decoration:none}
+a{color:var(--brand-deep);text-decoration:none}
 .container{max-width:1040px;margin:0 auto;padding:0 20px}
 
+/* ===== 樱花 canvas（满屏飘落，不挡交互） ===== */
+#sakura{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
+
+/* ===== 液态玻璃基础 ===== */
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);
+  box-shadow:var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,.85);
+  position:relative;
+}
+.glass::after{ /* 玻璃内部折射高光 */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(115deg, rgba(255,255,255,.5) 0%, transparent 32%, transparent 68%, rgba(255,255,255,.22) 100%);
+}
+
 /* ===== 顶栏 ===== */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(12,13,17,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
-.nav.scrolled{border-bottom-color:var(--line)}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.5);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.65);transition:box-shadow .3s}
+.nav.scrolled{box-shadow:0 4px 24px rgba(140,100,200,.12)}
 .nav .container{display:flex;align-items:center;justify-content:space-between;height:58px}
-.logo{font-weight:800;font-size:17px;letter-spacing:.5px;color:#fff}
-.logo span{color:var(--brand-2)}
-.nav-links{display:flex;gap:20px;font-size:13.5px;color:var(--ink-2)}
-.nav-links a{color:var(--ink-2);transition:color .2s}
-.nav-links a:hover{color:var(--brand-2)}
+.logo{font-weight:800;font-size:17px;letter-spacing:.5px;color:var(--ink)}
+.logo span{background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-links{display:flex;gap:20px;font-size:13.5px}
+.nav-links a{color:var(--ink-2);transition:color .2s;font-weight:500}
+.nav-links a:hover{color:var(--brand-deep)}
 
 /* ===== 主视觉 ===== */
 .cover{position:relative;padding-top:58px}
-.cover-art{position:relative;height:min(420px,52vh);min-height:300px;overflow:hidden;
+.cover-art{position:relative;height:min(440px,54vh);min-height:320px;overflow:hidden;
   background:
-    radial-gradient(120% 90% at 15% 10%, rgba(245,158,11,.28) 0%, transparent 55%),
-    radial-gradient(100% 80% at 90% 15%, rgba(217,70,6,.22) 0%, transparent 50%),
-    radial-gradient(130% 110% at 50% 110%, rgba(120,53,15,.5) 0%, transparent 60%),
-    linear-gradient(160deg,#1a1206 0%,#2a1c08 45%,#120c04 100%);
+    radial-gradient(90% 70% at 20% 15%, rgba(249,168,212,.45) 0%, transparent 55%),
+    radial-gradient(80% 65% at 85% 20%, rgba(196,181,253,.5) 0%, transparent 55%),
+    radial-gradient(120% 90% at 50% 110%, rgba(165,214,255,.45) 0%, transparent 60%),
+    linear-gradient(170deg,#fdf2f8 0%,#ede9fe 55%,#dbeafe 100%);
   display:flex;align-items:center;justify-content:center}
-.cover-art::before{content:"";position:absolute;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
-  background-size:44px 44px;
-  mask-image:radial-gradient(90% 90% at 50% 40%,#000 30%,transparent 100%)}
-.cover-art::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%)}
-/* 模拟「吹风机卡」卡片图形 */
-.pcard{position:relative;z-index:2;width:230px;height:320px;border-radius:20px;padding:22px;
-  background:linear-gradient(155deg,#fbbf24 0%,#f59e0b 35%,#b45309 100%);
-  box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12) inset;
+.cover-art::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.4) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(90% 90% at 50% 40%,#000 30%,transparent 100%)}
+/* 玻璃「吹风机卡」 */
+.pcard{position:relative;z-index:2;width:236px;height:326px;border-radius:22px;padding:22px;color:#4a2c46;
+  background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(249,168,212,.55) 45%,rgba(196,181,253,.6));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 30px 60px rgba(180,120,200,.35), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -20px 40px rgba(236,72,153,.08);
   transform:rotate(-4deg);transition:transform .4s}
 .pcard:hover{transform:rotate(-2deg) translateY(-6px)}
-.pcard .p-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:rgba(60,25,0,.75);letter-spacing:1px}
-.pcard .p-face{display:flex;flex-direction:column;align-items:center;justify-content:center;height:70%;gap:8px}
-.pcard .p-face .emoji{font-size:64px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))}
-.pcard .p-face .t{font-size:17px;font-weight:800;color:#3a1a00;letter-spacing:2px}
-.pcard .p-face .s{font-size:11px;color:rgba(60,25,0,.7);letter-spacing:3px}
-.pcard .p-bottom{display:flex;justify-content:space-between;align-items:flex-end;font-size:10px;color:rgba(60,25,0,.7);letter-spacing:1px}
-.pcard .p-bottom b{font-size:13px;color:#3a1a00}
-.cover-badge{position:absolute;top:16px;right:16px;z-index:3;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12px;padding:6px 14px;border-radius:999px;backdrop-filter:blur(8px)}
+.pcard::before{content:"";position:absolute;inset:0;border-radius:22px;background:radial-gradient(80% 60% at 80% 0%,rgba(255,255,255,.8),transparent 55%);pointer-events:none}
+.pcard .p-top{position:relative;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:rgba(190,24,93,.7);letter-spacing:1px}
+.pcard .p-face{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:70%;gap:8px}
+.pcard .p-face .emoji{font-size:62px;filter:drop-shadow(0 8px 16px rgba(236,72,153,.35))}
+.pcard .p-face .t{font-size:17px;font-weight:800;color:#7c2d5c;letter-spacing:2px}
+.pcard .p-face .s{font-size:11px;color:rgba(124,45,92,.65);letter-spacing:3px}
+.pcard .p-bottom{position:relative;display:flex;justify-content:space-between;align-items:flex-end;font-size:10px;color:rgba(124,45,92,.65);letter-spacing:1px}
+.pcard .p-bottom b{font-size:13px;color:#7c2d5c}
+.cover-badge{position:absolute;top:16px;right:16px;z-index:3;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);color:var(--brand-deep);font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;backdrop-filter:blur(10px)}
 
 /* 标题信息区 */
 .cover-info{padding:34px 0 26px}
 .cover-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.cover-tags .t{font-size:11.5px;color:var(--brand-2);background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);padding:4px 12px;border-radius:999px;letter-spacing:.5px}
-.cover-info h1{font-size:clamp(26px,6vw,38px);font-weight:800;line-height:1.25;letter-spacing:.5px}
+.cover-tags .t{font-size:11.5px;color:var(--brand-deep);background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.3);padding:4px 12px;border-radius:999px;letter-spacing:.5px;font-weight:600}
+.cover-info h1{font-size:clamp(26px,6vw,38px);font-weight:800;line-height:1.25;letter-spacing:.5px;background:linear-gradient(120deg,#be185d,#7c3aed 60%,#2563eb);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cover-info .sub{color:var(--ink-2);font-size:15px;margin:12px 0 22px;max-width:600px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 8px;text-align:center}
-.stat b{display:block;font-size:clamp(16px,4.5vw,20px);font-weight:800;color:var(--brand-2)}
-.stat i{font-style:normal;font-size:11.5px;color:var(--ink-3)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{padding:16px 8px;text-align:center}
+.stat b{display:block;font-size:clamp(16px,4.5vw,20px);font-weight:800;background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat i{font-style:normal;font-size:11.5px;color:var(--ink-2)}
 
 /* ===== 商品信息详情 ===== */
-.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:64px}
-.spec{border-bottom:1px solid var(--line);padding:16px 18px;display:flex;align-items:center;gap:12px}
-.spec:nth-child(odd){border-right:1px solid var(--line)}
+.specs{display:grid;grid-template-columns:repeat(2,1fr);gap:0;overflow:hidden;margin-bottom:64px;padding:4px}
+.spec{border-bottom:1px solid rgba(255,255,255,.55);padding:16px 18px;display:flex;align-items:center;gap:12px}
+.spec:nth-child(odd){border-right:1px solid rgba(255,255,255,.55)}
 .spec:nth-last-child(-n+2){border-bottom:none}
-.spec .ic{width:38px;height:38px;border-radius:11px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.spec .ic{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,rgba(236,72,153,.16),rgba(139,92,246,.16));display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
 .spec .lab{font-size:11px;color:var(--ink-3)}
 .spec .val{font-size:13.5px;font-weight:600;color:var(--ink);margin-top:1px}
 
-/* ===== 作者卡 ===== */
-.maker{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:26px}
-.maker .av{width:52px;height:52px;border-radius:50%;background:linear-gradient(140deg,var(--brand-2),var(--brand-deep));display:flex;align-items:center;justify-content:center;font-size:24px;flex:none;box-shadow:0 6px 18px rgba(245,158,11,.35)}
+/* ===== 工作室卡 ===== */
+.maker{display:flex;align-items:center;gap:14px;padding:16px 18px;margin-bottom:26px}
+.maker .av{width:52px;height:52px;border-radius:50%;background:linear-gradient(140deg,var(--brand-2),var(--violet));display:flex;align-items:center;justify-content:center;font-size:24px;flex:none;box-shadow:0 6px 18px rgba(236,72,153,.35)}
 .maker .m-name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px}
-.maker .m-name .v{font-size:10px;background:linear-gradient(120deg,var(--brand),var(--brand-2));color:#3a1a00;font-weight:800;padding:2px 8px;border-radius:999px}
+.maker .m-name .v{font-size:10px;background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;font-weight:800;padding:2px 8px;border-radius:999px}
 .maker .m-meta{font-size:12px;color:var(--ink-3);margin-top:2px}
-.maker .m-follow{margin-left:auto;background:rgba(245,158,11,.14);color:var(--brand-2);border:1px solid rgba(245,158,11,.35);font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.maker .m-follow{margin-left:auto;background:rgba(236,72,153,.12);color:var(--brand-deep);border:1px solid rgba(236,72,153,.35);font-size:13px;font-weight:600;padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .2s;white-space:nowrap}
 .maker .m-follow:active{transform:scale(.95)}
 
 /* ===== CTA ===== */
 .cta{display:flex;gap:12px;margin-bottom:22px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 26px;border-radius:999px;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:transform .15s,box-shadow .15s;text-decoration:none}
 .btn:active{transform:scale(.96)}
-.btn-primary{flex:1.4;background:linear-gradient(120deg,var(--brand),var(--brand-2));color:#3a1a00;box-shadow:0 10px 26px rgba(245,158,11,.3)}
-.btn-primary:hover{box-shadow:0 14px 34px rgba(245,158,11,.42)}
-.btn-ghost{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line)}
-.btn-ghost:hover{border-color:rgba(245,158,11,.4);color:var(--brand-2)}
+.btn-primary{flex:1.4;background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;box-shadow:0 10px 26px rgba(236,72,153,.35)}
+.btn-primary:hover{box-shadow:0 14px 34px rgba(236,72,153,.5)}
+.btn-ghost{flex:1;background:rgba(255,255,255,.55);color:var(--ink);border:1px solid rgba(255,255,255,.8);backdrop-filter:blur(12px)}
+.btn-ghost:hover{border-color:rgba(236,72,153,.4);color:var(--brand-deep)}
 
 /* ===== 标签 ===== */
 .tags{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 64px}
-.tags .t{font-size:12.5px;color:var(--ink-2);background:var(--card);border:1px solid var(--line);padding:6px 14px;border-radius:999px}
+.tags .t{font-size:12.5px;color:var(--ink-2);background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);padding:6px 14px;border-radius:999px;backdrop-filter:blur(8px)}
 
 /* ===== 区块标题 ===== */
 .sec-head{margin-bottom:24px}
-.sec-head .en{font-size:11px;letter-spacing:3px;color:var(--brand-deep);font-weight:700}
+.sec-head .en{font-size:11px;letter-spacing:3px;background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
 .sec-head h2{font-size:clamp(20px,5vw,26px);font-weight:800;margin-top:4px}
 
-/* ===== 款式推荐（瀑布流卡片） ===== */
+/* ===== 款式推荐（玻璃卡片） ===== */
 .reco{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:72px}
-.rcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column}
-.rcard:hover{transform:translateY(-4px);border-color:rgba(245,158,11,.4)}
-.rcard .thumb{position:relative;height:150px;display:flex;align-items:center;justify-content:center}
-.rcard .thumb .e{font-size:44px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.4))}
-.rcard .thumb .bd{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:700;color:#3a1a00;background:linear-gradient(120deg,var(--brand),var(--brand-2));padding:3px 10px;border-radius:999px}
-.rcard .thumb .price-tag{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px}
-.rcard .body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+.rcard{padding:6px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.rcard:hover{transform:translateY(-4px);box-shadow:0 16px 44px rgba(140,100,200,.25)}
+.rcard .thumb{position:relative;height:150px;display:flex;align-items:center;justify-content:center;border-radius:18px;overflow:hidden}
+.rcard .thumb .e{font-size:44px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.15))}
+.rcard .thumb .bd{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:700;color:#fff;background:linear-gradient(120deg,var(--brand),var(--violet));padding:3px 10px;border-radius:999px}
+.rcard .thumb .price-tag{position:absolute;bottom:10px;right:10px;background:rgba(255,255,255,.75);backdrop-filter:blur(6px);color:var(--brand-deep);font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.9)}
+.rcard .body{padding:14px 12px 12px;display:flex;flex-direction:column;flex:1}
 .rcard .body h3{font-size:15.5px;font-weight:700}
 .rcard .body p{font-size:12.5px;color:var(--ink-3);margin:6px 0 12px;flex:1}
-.rcard .pick{background:rgba(245,158,11,.12);color:var(--brand-2);border:1px solid rgba(245,158,11,.3);border-radius:999px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
-.rcard .pick:hover{background:linear-gradient(120deg,var(--brand),var(--brand-2));color:#3a1a00;border-color:transparent}
-.t-c1{background:radial-gradient(120% 100% at 20% 10%,rgba(251,191,36,.55),transparent 55%),radial-gradient(100% 90% at 85% 90%,rgba(217,119,6,.5),transparent 60%),linear-gradient(150deg,#3a2a10,#171007)}
-.t-c2{background:radial-gradient(120% 100% at 15% 15%,rgba(245,158,11,.5),transparent 55%),radial-gradient(110% 90% at 85% 85%,rgba(147,51,234,.45),transparent 60%),linear-gradient(150deg,#2c1a10,#150c18)}
-.t-c3{background:radial-gradient(120% 100% at 20% 10%,rgba(251,191,36,.35),transparent 50%),radial-gradient(110% 90% at 80% 90%,rgba(180,83,9,.55),transparent 60%),linear-gradient(150deg,#241a0c,#0a0806)}
+.rcard .pick{background:linear-gradient(120deg,rgba(236,72,153,.12),rgba(139,92,246,.12));color:var(--brand-deep);border:1px solid rgba(236,72,153,.35);border-radius:999px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.rcard .pick:hover{background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;border-color:transparent}
+.t-c1{background:radial-gradient(120% 100% at 20% 10%,rgba(249,168,212,.7),transparent 55%),radial-gradient(100% 90% at 85% 90%,rgba(196,181,253,.65),transparent 60%),linear-gradient(150deg,#fdf2f8,#e9d5ff)}
+.t-c2{background:radial-gradient(120% 100% at 15% 15%,rgba(196,181,253,.7),transparent 55%),radial-gradient(110% 90% at 85% 85%,rgba(165,214,255,.7),transparent 60%),linear-gradient(150deg,#f5f3ff,#dbeafe)}
+.t-c3{background:radial-gradient(120% 100% at 20% 10%,rgba(253,224,71,.5),transparent 50%),radial-gradient(110% 90% at 80% 90%,rgba(236,72,153,.45),transparent 60%),linear-gradient(150deg,#fefce8,#fce7f3)}
 
 /* ===== 下单表单 ===== */
-.order-box{background:linear-gradient(180deg,var(--card),var(--bg-2));border:1px solid var(--line);border-radius:22px;padding:26px 22px;margin-bottom:64px}
+.order-box{padding:26px 22px;margin-bottom:64px}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--ink-2)}
-.field label .req{color:var(--brand-2)}
-.field select,.field input,.field textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-size:14.5px;padding:13px 14px;outline:none;transition:border-color .2s;font-family:inherit}
-.field select:focus,.field input:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(245,158,11,.15)}
-.field select option{background:var(--bg);color:var(--ink)}
+.field label .req{background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.field select,.field input,.field textarea{width:100%;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);border-radius:14px;color:var(--ink);font-size:14.5px;padding:13px 14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit;backdrop-filter:blur(8px)}
+.field select:focus,.field input:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(236,72,153,.18)}
+.field select option{background:#fff;color:var(--ink)}
 .field textarea{min-height:88px;resize:vertical}
-.submit-btn{width:100%;background:linear-gradient(120deg,var(--brand),var(--brand-2));color:#3a1a00;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;margin-top:6px;letter-spacing:2px}
+.submit-btn{width:100%;background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;transition:transform .15s,box-shadow .15s;margin-top:6px;letter-spacing:2px;box-shadow:0 8px 22px rgba(236,72,153,.3)}
 .submit-btn:active{transform:scale(.97)}
 .submit-btn:disabled{opacity:.6;cursor:not-allowed}
 .hint{font-size:12px;color:var(--ink-3);text-align:center;margin-top:12px}
 
 /* 成功面板 */
 .success{display:none;text-align:center;padding:10px 6px}
-.success .check{width:64px;height:64px;border-radius:50%;background:rgba(52,211,153,.14);color:var(--ok);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px;box-shadow:0 0 0 1px rgba(52,211,153,.3)}
+.success .check{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(52,211,153,.2),rgba(139,92,246,.2));color:#10b981;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px;box-shadow:0 0 0 1px rgba(16,185,129,.3)}
 .success h3{font-size:20px;margin-bottom:8px}
 .success>p{color:var(--ink-2);font-size:13.5px;margin-bottom:18px}
-.wechat-box{background:var(--bg-2);border:1px dashed rgba(245,158,11,.4);border-radius:16px;padding:18px;margin-bottom:16px}
-.wechat-box img{width:150px;height:150px;border-radius:12px;margin:0 auto 12px;display:block;background:#fef3c7;object-fit:contain}
+.wechat-box{background:rgba(255,255,255,.55);border:1px dashed rgba(236,72,153,.45);border-radius:16px;padding:18px;margin-bottom:16px;backdrop-filter:blur(8px)}
+.wechat-box img{width:150px;height:150px;border-radius:12px;margin:0 auto 12px;display:block;background:#fff;object-fit:contain}
 .wechat-box .id{font-size:15px;font-weight:700;color:var(--ink)}
-.copy-btn{margin-top:10px;padding:8px 22px;background:var(--card-2);border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.copy-btn{margin-top:10px;padding:8px 22px;background:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.9);border-radius:999px;font-size:13px;color:var(--ink-2);cursor:pointer}
 .copy-btn:active{transform:scale(.95)}
 
 /* ===== FAQ ===== */
 .faq{margin-bottom:72px}
-.faq-item{border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;background:var(--card)}
+.faq-item{padding:0;border-radius:16px;margin-bottom:10px;overflow:hidden}
 .faq-item summary{list-style:none;padding:15px 18px;font-size:14.5px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .faq-item summary::-webkit-details-marker{display:none}
-.faq-item summary::after{content:"+";font-size:19px;color:var(--brand-2);transition:transform .25s}
+.faq-item summary::after{content:"+";font-size:19px;background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent;transition:transform .25s}
 .faq-item[open] summary::after{transform:rotate(45deg)}
 .faq-item .ans{padding:0 18px 15px;font-size:13.5px;color:var(--ink-2)}
 
-footer{background:#08090c;border-top:1px solid var(--line);color:var(--ink-3);text-align:center;padding:34px 20px;font-size:12.5px}
-footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
+footer{background:rgba(255,255,255,.5);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.7);color:var(--ink-3);text-align:center;padding:34px 20px;font-size:12.5px}
+footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
 
-.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--bg);padding:10px 22px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:200;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(80px);background:rgba(45,42,58,.92);color:#fff;padding:10px 22px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:300;pointer-events:none;backdrop-filter:blur(10px)}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
-/* ===== 音乐按钮 ===== */
-.music-btn{position:fixed;right:18px;bottom:24px;z-index:300;width:46px;height:46px;border-radius:50%;border:1px solid rgba(245,158,11,.4);background:rgba(18,19,25,.85);backdrop-filter:blur(10px);color:var(--brand-2);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(0,0,0,.5);transition:transform .2s,border-color .2s}
-.music-btn:active{transform:scale(.9)}
-.music-btn.playing{animation:musicPulse 2.4s ease-in-out infinite}
-.music-btn.playing .ic{display:inline-block;animation:musicSpin 4s linear infinite}
-@keyframes musicSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@keyframes musicPulse{0%,100%{box-shadow:0 8px 22px rgba(0,0,0,.5),0 0 0 0 rgba(245,158,11,.35)}50%{box-shadow:0 8px 22px rgba(0,0,0,.5),0 0 0 12px rgba(245,158,11,0)}}
+/* ===== 音乐按钮（液态玻璃悬浮） ===== */
+.music-fab{position:fixed;right:18px;bottom:18px;z-index:120;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.4));
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 28px rgba(140,100,200,.3), inset 0 1px 0 rgba(255,255,255,.9);
+  display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.music-fab:active{transform:scale(.92)}
+.music-fab.playing{animation:fabPulse 2.4s ease-in-out infinite}
+@keyframes fabPulse{0%,100%{box-shadow:0 8px 28px rgba(236,72,153,.35),0 0 0 0 rgba(236,72,153,.35)}50%{box-shadow:0 8px 28px rgba(236,72,153,.45),0 0 0 14px rgba(236,72,153,0)}}
+
+/* ===== 歌词面板 ===== */
+.lyric-panel{position:fixed;right:18px;bottom:84px;z-index:119;width:min(340px,calc(100vw - 36px));height:min(520px,68vh);
+  background:linear-gradient(150deg,rgba(255,255,255,.8),rgba(255,255,255,.55));
+  backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid rgba(255,255,255,.9);border-radius:26px;box-shadow:0 18px 50px rgba(140,100,200,.3), inset 0 1px 0 rgba(255,255,255,.95);
+  display:flex;flex-direction:column;overflow:hidden;transform:translateY(16px) scale(.96);opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.2,.8,.3,1)}
+.lyric-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+.lyric-head{padding:16px 18px 12px;border-bottom:1px solid rgba(255,255,255,.6);display:flex;align-items:center;gap:10px}
+.lyric-head .cover{width:44px;height:44px;border-radius:12px;background:linear-gradient(140deg,var(--brand-2),var(--violet));display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;box-shadow:0 4px 12px rgba(236,72,153,.35)}
+.lyric-head .info{flex:1;min-width:0}
+.lyric-head .info .song{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lyric-head .info .artist{font-size:11.5px;color:var(--ink-3)}
+.lyric-head .close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink-2);cursor:pointer;flex:none}
+.lyric-progress{padding:12px 18px 4px}
+.lyric-progress input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:5px;border-radius:999px;background:linear-gradient(90deg,var(--brand) var(--p,0%),rgba(236,72,153,.2) var(--p,0%));outline:none;cursor:pointer}
+.lyric-progress input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--brand);box-shadow:0 2px 8px rgba(236,72,153,.4)}
+.lyric-times{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-3);margin-top:5px;padding:0 2px}
+.lyric-list{flex:1;overflow-y:auto;padding:12px 18px 20px;scrollbar-width:none}
+.lyric-list::-webkit-scrollbar{display:none}
+.lyric-line{padding:7px 0;font-size:14.5px;color:var(--ink-3);text-align:center;transition:all .3s;line-height:1.5}
+.lyric-line.active{color:var(--ink);font-weight:800;font-size:17px;background:linear-gradient(120deg,var(--brand),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lyric-line.prev{color:var(--ink-2)}
 
 @media(max-width:640px){
   .nav-links{display:none}
   .stats{grid-template-columns:repeat(4,1fr);gap:8px}
-  .stat{padding:11px 4px}
+  .stat{padding:13px 4px}
   .specs{grid-template-columns:1fr}
   .spec:nth-child(odd){border-right:none}
-  .spec:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
+  .spec:nth-last-child(-n+2){border-bottom:1px solid rgba(255,255,255,.55)}
   .spec:last-child{border-bottom:none}
   .cta{flex-direction:column}
-  .pcard{width:190px;height:265px}
+  .pcard{width:196px;height:272px}
 }
 </style>
 </head>
 <body>
+
+<!-- 樱花飘落 canvas -->
+<canvas id="sakura"></canvas>
 
 <nav class="nav" id="nav">
   <div class="container">
@@ -209,11 +262,11 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
 <!-- ===== 主视觉（壁纸详情页风格） ===== -->
 <section class="cover">
   <div class="cover-art">
-    <span class="cover-badge">🔥 手工定制 · 每日限量</span>
+    <span class="cover-badge">🌸 手工定制 · 每日限量</span>
     <div class="pcard">
       <div class="p-top"><span>SAKURA</span><span>✦ 2026</span></div>
       <div class="p-face">
-        <div class="emoji">🎨</div>
+        <div class="emoji">🌸</div>
         <div class="t">吹风机卡</div>
         <div class="s">CUSTOM CARD</div>
       </div>
@@ -226,10 +279,10 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
       <h1>定制你的专属吹风机卡</h1>
       <p class="sub">每一张都独一无二。选款式、定图案、加文字，手工制作，包您满意。</p>
       <div class="stats">
-        <div class="stat"><b>1200+</b><i>已定制</i></div>
-        <div class="stat"><b>99%</b><i>好评率</i></div>
-        <div class="stat"><b>2-3天</b><i>发货</i></div>
-        <div class="stat"><b>包退换</b><i>用不了退</i></div>
+        <div class="stat glass"><b>1200+</b><i>已定制</i></div>
+        <div class="stat glass"><b>99%</b><i>好评率</i></div>
+        <div class="stat glass"><b>2-3天</b><i>发货</i></div>
+        <div class="stat glass"><b>包退换</b><i>用不了退</i></div>
       </div>
     </div>
   </div>
@@ -237,34 +290,38 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
 
 <div class="container">
   <!-- ===== 商品信息 ===== -->
-  <div class="specs" id="specs">
+  <div class="specs glass" id="specs">
     <div class="spec"><div class="ic">📦</div><div><div class="lab">档位</div><div class="val">经典 / 精品 / 豪华</div></div></div>
     <div class="spec"><div class="ic">🎨</div><div><div class="lab">风格</div><div class="val">图案 / 配色 / 文字可定制</div></div></div>
     <div class="spec"><div class="ic">💰</div><div><div class="lab">价格</div><div class="val">¥59.9 起</div></div></div>
     <div class="spec"><div class="ic">🚚</div><div><div class="lab">发货</div><div class="val">确认后 2-3 天内发出</div></div></div>
+    <div class="spec"><div class="ic">✨</div><div><div class="lab">品质</div><div class="val">用不了包退包换</div></div></div>
+    <div class="spec"><div class="ic">💬</div><div><div class="lab">沟通</div><div class="val">微信 k638666798k</div></div></div>
   </div>
 
-  <!-- ===== 工作室卡片 ===== -->
-  <div class="maker">
-    <div class="av">🏠</div>
+  <!-- ===== 工作室卡 ===== -->
+  <div class="maker glass">
+    <div class="av">🌸</div>
     <div>
       <div class="m-name">Sarkura 工作室 <span class="v">认证</span></div>
-      <div class="m-meta">粉丝 1200+ · 分享 300+ · 获载 97.2万</div>
+      <div class="m-meta">手工定制 · 用心做每一张</div>
     </div>
-    <button class="m-follow" id="followBtn">联系微信</button>
+    <button class="m-follow" id="followBtn">添加微信</button>
   </div>
 
   <!-- ===== CTA ===== -->
   <div class="cta">
-    <a href="#order" class="btn btn-primary">立即下单 🛒</a>
-    <a href="#order" class="btn btn-ghost">💬 添加微信</a>
+    <a class="btn btn-primary" href="#order">🛒 立即下单</a>
+    <button class="btn btn-ghost" id="ctaWx">💬 添加微信</button>
   </div>
 
+  <!-- ===== 标签墙 ===== -->
   <div class="tags">
     <span class="t"># 可定制图案</span>
     <span class="t"># 配色自选</span>
+    <span class="t"># 支持加字</span>
     <span class="t"># 包退包换</span>
-    <span class="t"># 纯手工</span>
+    <span class="t"># 手工制作</span>
     <span class="t"># 快速发货</span>
   </div>
 
@@ -274,7 +331,7 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
     <h2>相似款式推荐</h2>
   </div>
   <div class="reco">
-    <div class="rcard" data-svc="经典款（¥59.9）">
+    <div class="rcard glass" data-svc="经典款（¥59.9）">
       <div class="thumb t-c1"><span class="bd">经典之选</span><span class="e">🎨</span><span class="price-tag">¥59.9 起</span></div>
       <div class="body">
         <h3>经典款</h3>
@@ -282,7 +339,7 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
         <button class="pick">选择此款</button>
       </div>
     </div>
-    <div class="rcard" data-svc="精品款（¥99.9）">
+    <div class="rcard glass" data-svc="精品款（¥99.9）">
       <div class="thumb t-c2"><span class="bd">人气爆款</span><span class="e">⭐</span><span class="price-tag">¥99.9 起</span></div>
       <div class="body">
         <h3>精品款</h3>
@@ -290,7 +347,7 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
         <button class="pick">选择此款</button>
       </div>
     </div>
-    <div class="rcard" data-svc="豪华款（¥125.99）">
+    <div class="rcard glass" data-svc="豪华款（¥125.99）">
       <div class="thumb t-c3"><span class="bd">尊享定制</span><span class="e">💎</span><span class="price-tag">¥125.99 起</span></div>
       <div class="body">
         <h3>豪华款</h3>
@@ -305,7 +362,7 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
     <div class="en">ORDER</div>
     <h2>在线下单</h2>
   </div>
-  <div class="order-box">
+  <div class="order-box glass">
     <form id="orderForm">
       <div class="field">
         <label>选择款式 <span class="req">*</span></label>
@@ -352,70 +409,202 @@ footer .brand{color:#fff;font-weight:700;font-size:15px;margin-bottom:6px}
     <h2>常见问题</h2>
   </div>
   <div class="faq">
-    <details class="faq-item">
+    <details class="faq-item glass">
       <summary>如何付款？</summary>
       <div class="ans">加微信确认款式和价格后，通过微信/支付宝转账付款，付款后开始制作。</div>
     </details>
-    <details class="faq-item">
+    <details class="faq-item glass">
       <summary>多久发货？</summary>
       <div class="ans">经典款 3 天内、精品款 2 天内发货，豪华款优先制作。具体以沟通为准。</div>
     </details>
-    <details class="faq-item">
+    <details class="faq-item glass">
       <summary>「用不了包退包换」是什么意思？</summary>
       <div class="ans">收到货如果发现用不了、不适用，或与沟通不符，支持退换，放心下单。</div>
-    </details>
-    <details class="faq-item">
-      <summary>可以指定图案或文字吗？</summary>
-      <div class="ans">可以。精品款可指定配色，豪华款支持完全自由定制，包括图案、文字和专属设计。</div>
     </details>
   </div>
 </div>
 
 <footer>
-  <div class="brand">Sarkura工作室</div>
-  <div>吹风机卡定制 · 包您满意 · 微信：k638666798k</div>
-  <div style="margin-top:6px">© 2026 Sarkura工作室</div>
+  <div class="brand">Sarkura 工作室</div>
+  <div>定制你的专属吹风机卡 · 微信号 k638666798k</div>
+  <div style="margin-top:6px">© 2026 Sarkura Studio</div>
 </footer>
 
-<button class="music-btn" id="musicBtn" title="背景音乐"><span class="ic">🎵</span></button>
+<!-- ===== 音乐悬浮按钮 ===== -->
+<button class="music-fab" id="musicFab" aria-label="音乐">🎵</button>
+
+<!-- ===== 歌词面板 ===== -->
+<div class="lyric-panel" id="lyricPanel">
+  <div class="lyric-head">
+    <div class="cover">🎧</div>
+    <div class="info">
+      <div class="song">失眠</div>
+      <div class="artist">Suki刘舒妤</div>
+    </div>
+    <button class="close" id="lyricClose">✕</button>
+  </div>
+  <div class="lyric-progress">
+    <input type="range" id="lyricSeek" min="0" max="100" value="0">
+    <div class="lyric-times"><span id="timeCur">0:00</span><span id="timeDur">0:00</span></div>
+  </div>
+  <div class="lyric-list" id="lyricList"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-
-/* ===== 背景音乐（八音盒） ===== */
-const music = new Audio('music.mp3');
-music.loop = true;
-music.volume = 0.5;
-music.preload = 'auto';
-let musicStarted = false;
-function startMusic(){
-  if(musicStarted) return;
-  music.play().then(() => {
-    musicStarted = true;
-    document.getElementById('musicBtn').classList.add('playing');
-  }).catch(() => {});
-}
-function toggleMusic(){
-  const btn = document.getElementById('musicBtn');
-  if(music.paused){
-    music.play().then(() => { musicStarted = true; btn.classList.add('playing'); }).catch(()=>{});
-  } else {
-    music.pause(); btn.classList.remove('playing');
+/* ===== 樱花飘落特效 ===== */
+(function(){
+  const cv = document.getElementById('sakura');
+  const ctx = cv.getContext('2d');
+  let W, H, DPR, petals = [];
+  const COLORS = ['#ffd7e8','#ffc4dd','#ffb3d1','#ffe3f0','#ffd9e8'];
+  function resize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    const n = Math.min(60, Math.max(34, Math.floor(W/18)));
+    petals = [];
+    for(let i=0;i<n;i++) petals.push(newPetal(true));
   }
-}
-document.getElementById('musicBtn').addEventListener('click', toggleMusic);
-/* 进站尝试自动播放；被浏览器拦截则首次点击/触摸即响 */
-startMusic();
-['touchstart','click','keydown'].forEach(ev => window.addEventListener(ev, startMusic, {passive:true}));
+  function newPetal(anywhere){
+    return {
+      x: Math.random()*W,
+      y: anywhere ? Math.random()*H : -20 - Math.random()*80,
+      size: 6 + Math.random()*8,
+      vy: .6 + Math.random()*1.4,
+      swayAmp: 12 + Math.random()*26,
+      swaySpeed: .004 + Math.random()*.008,
+      phase: Math.random()*Math.PI*2,
+      rot: Math.random()*Math.PI*2,
+      rotSpeed: (Math.random()-.5)*.04,
+      alpha: .45 + Math.random()*.5,
+      color: COLORS[Math.floor(Math.random()*COLORS.length)]
+    };
+  }
+  function drawPetal(p){
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo(p.size*.9, -p.size*.7, p.size*1.1, p.size*.35, 0, p.size*1.05);
+    ctx.bezierCurveTo(-p.size*1.1, p.size*.35, -p.size*.9, -p.size*.7, 0, 0);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(236,72,153,.28)';
+    ctx.lineWidth = .8;
+    ctx.stroke();
+    ctx.restore();
+  }
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of petals){
+      p.phase += p.swaySpeed;
+      p.x += Math.sin(p.phase)*p.swayAmp*.06;
+      p.y += p.vy;
+      p.rot += p.rotSpeed;
+      if(p.y > H + 24 || p.x < -40 || p.x > W + 40) Object.assign(p, newPetal(false));
+      drawPetal(p);
+    }
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', resize);
+  resize(); frame();
+})();
 
+/* ===== 音乐播放（自动播放 + 首次交互兜底） ===== */
+const LYRIC = [[15.73,"这个失眠夜 想不起你是谁"],[20.65,"品尝过爱情的香甜"],[23.21,"我舍不得喝水"],[29.82,"人总是疯癫 不惜牺牲一切"],[35.23,"却只为了换一次"],[37.27,"拥抱爱的机会"],[42.18,"被你牵着的手是不可能的画面"],[49.23,"拥有你的时间已经不可能倒回"],[55.81,"爱情像纠结的毛线"],[59.66,"你说爱我太过浪费"],[63.33,"太过狼狈 太过愚昧"],[66.91,"都是我一厢情愿"],[70.44,"尝试过爱恋 尝试过缠绵"],[74.41,"最后还是失眠"],[77.42,"脆弱无助的黑夜 都是你抽的烟"],[84.17,"我尝试过亏欠 尝试过敷衍"],[88.6,"最后还是失眠"],[91.67,"忍住怀念 却清醒过 一整夜"],[98.71,"被你牵着的手是不可能的画面"],[105.5,"拥有你的时间已经不可能倒回"],[112.37,"爱情像纠结的毛线"],[116.19,"你说爱我太过浪费"],[119.77,"太过狼狈 太过愚昧"],[123.46,"都是我一厢情愿"],[126.89,"尝试过爱恋 尝试过缠绵"],[130.86,"最后还是失眠"],[133.93,"脆弱无助的黑夜"],[136.16,"都是你抽的烟"],[140.55,"我尝试过亏欠 尝试过敷衍"],[144.98,"最后还是失眠"],[148.02,"忍住怀念 却清醒过 一整夜"],[154.73,"我尝试过爱恋 尝试过缠绵"],[159.06,"最后还是失眠"],[162.28,"眼泪填满的黑夜 是戒不掉的烟"],[168.7,"我尝试过亏欠 尝试过敷衍"],[173.19,"最后还是失眠"],[176.26,"忍住后悔 却忍不住 又想念"],[183.3,"忍住怀念 却清醒过 一整夜"]];
+
+const audio = new Audio('music.mp3');
+audio.loop = true;
+audio.preload = 'auto';
+let musicStarted = false;
+const fab = document.getElementById('musicFab');
+const panel = document.getElementById('lyricPanel');
+const listEl = document.getElementById('lyricList');
+const seekEl = document.getElementById('lyricSeek');
+const timeCur = document.getElementById('timeCur');
+const timeDur = document.getElementById('timeDur');
+let curIdx = -1;
+
+/* 渲染歌词 */
+LYRIC.forEach(l => {
+  const d = document.createElement('div');
+  d.className = 'lyric-line';
+  d.textContent = l[1];
+  listEl.appendChild(d);
+});
+const lines = listEl.children;
+
+function fmt(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+
+function tryPlay(){
+  if(musicStarted) return;
+  musicStarted = true;
+  audio.play().then(() => { fab.classList.add('playing'); fab.textContent = '🎶'; })
+    .catch(() => { musicStarted = false; });
+}
+/* 进站尝试自动播放 */
+tryPlay();
+/* 浏览器安全限制兜底：首次交互立即响 */
+['touchstart','click','scroll','keydown'].forEach(ev =>
+  document.addEventListener(ev, function kick(){ tryPlay(); }, { once:false, passive:true }));
+setTimeout(() => { if(!musicStarted){ document.addEventListener('pointerdown', tryPlay, {once:true}); } }, 800);
+
+/* 按钮开关 + 面板 */
+fab.addEventListener('click', () => {
+  if(audio.paused){ audio.play().then(()=>{ fab.classList.add('playing'); fab.textContent='🎶'; }); }
+  else { audio.pause(); fab.classList.remove('playing'); fab.textContent='🎵'; }
+  panel.classList.toggle('open');
+});
+document.getElementById('lyricClose').addEventListener('click', () => panel.classList.remove('open'));
+
+/* 歌词滚动 + 进度 */
+audio.addEventListener('timeupdate', () => {
+  const t = audio.currentTime;
+  let idx = -1;
+  for(let i=0;i<LYRIC.length;i++){ if(t >= LYRIC[i][0]) idx = i; else break; }
+  if(idx !== curIdx){
+    curIdx = idx;
+    for(let i=0;i<lines.length;i++){
+      lines[i].className = 'lyric-line' + (i===idx?' active':(i===idx-1?' prev':''));
+    }
+    if(idx >= 0){
+      const el = lines[idx];
+      const list = listEl;
+      list.scrollTo({ top: el.offsetTop - list.clientHeight/2 + el.clientHeight/2, behavior:'smooth' });
+    }
+  }
+  const dur = audio.duration || 0;
+  timeCur.textContent = fmt(t);
+  timeDur.textContent = fmt(dur);
+  const p = dur ? (t/dur*100) : 0;
+  seekEl.value = p;
+  seekEl.style.setProperty('--p', p + '%');
+});
+seekEl.addEventListener('input', () => {
+  const dur = audio.duration || 0;
+  if(dur) audio.currentTime = seekEl.value/100*dur;
+});
+audio.addEventListener('ended', () => { fab.classList.remove('playing'); fab.textContent='🎵'; });
+audio.addEventListener('pause', () => { fab.classList.remove('playing'); fab.textContent='🎵'; });
+audio.addEventListener('play', () => { fab.classList.add('playing'); fab.textContent='🎶'; });
+
+/* ===== 顶栏滚动 ===== */
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
 
+/* ===== 通用 toast ===== */
 const toast = document.getElementById('toast');
+let toastTimer;
 function showToast(msg){
   toast.textContent = msg;
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 1800);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
 }
 
 /* 复制微信号 */
@@ -433,6 +622,10 @@ document.getElementById('followBtn').addEventListener('click', () => {
   showToast('微信号：k638666798k，已复制');
   if(navigator.clipboard) navigator.clipboard.writeText('k638666798k').catch(()=>{});
   location.hash = '#order';
+});
+document.getElementById('ctaWx').addEventListener('click', () => {
+  showToast('微信号：k638666798k，已复制');
+  if(navigator.clipboard) navigator.clipboard.writeText('k638666798k').catch(()=>{});
 });
 
 /* 款式卡片 → 预选 + 滚动 */
