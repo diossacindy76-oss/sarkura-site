@@ -155,6 +155,8 @@ a{color:var(--brand-deep);text-decoration:none}
 .t-c1{background:radial-gradient(120% 100% at 20% 10%,rgba(249,168,212,.7),transparent 55%),radial-gradient(100% 90% at 85% 90%,rgba(196,181,253,.65),transparent 60%),linear-gradient(150deg,#fdf2f8,#e9d5ff)}
 .t-c2{background:radial-gradient(120% 100% at 15% 15%,rgba(196,181,253,.7),transparent 55%),radial-gradient(110% 90% at 85% 85%,rgba(165,214,255,.7),transparent 60%),linear-gradient(150deg,#f5f3ff,#dbeafe)}
 .t-c3{background:radial-gradient(120% 100% at 20% 10%,rgba(253,224,71,.5),transparent 50%),radial-gradient(110% 90% at 80% 90%,rgba(236,72,153,.45),transparent 60%),linear-gradient(150deg,#fefce8,#fce7f3)}
+.t-c4{background:radial-gradient(120% 100% at 15% 15%,rgba(253,230,138,.85),transparent 55%),radial-gradient(110% 90% at 85% 85%,rgba(251,191,36,.55),transparent 60%),linear-gradient(150deg,#fffbeb,#fef3c7)}
+.t-c5{background:radial-gradient(120% 100% at 20% 10%,rgba(252,211,77,.55),transparent 50%),radial-gradient(110% 90% at 85% 90%,rgba(217,119,6,.4),transparent 60%),linear-gradient(150deg,#fef9e7,#f5e6c8)}
 
 /* ===== 下单表单 ===== */
 .order-box{padding:26px 22px;margin-bottom:64px}
@@ -507,12 +509,12 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 
   <!-- ===== 标签墙 ===== -->
   <div class="tags">
-    <span class="t"># 可定制图案</span>
-    <span class="t"># 配色自选</span>
-    <span class="t"># 支持加字</span>
-    <span class="t"># 包退包换</span>
-    <span class="t"># 手工制作</span>
-    <span class="t"># 快速发货</span>
+    <span class="t"># 即买即用</span>
+    <span class="t"># 余额到账快</span>
+    <span class="t"># 支持自定义用户名</span>
+    <span class="t"># 内部卡限量</span>
+    <span class="t"># 官方直充</span>
+    <span class="t"># 用不了包退</span>
   </div>
 
   <!-- ===== 款式推荐 ===== -->
@@ -521,27 +523,43 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
     <h2>相似款式推荐</h2>
   </div>
   <div class="reco">
+    <div class="rcard glass" data-svc="体验版（¥9.9）">
+      <div class="thumb t-c1"><span class="bd">尝鲜体验</span><span class="e">🎈</span><span class="price-tag">¥9.9</span></div>
+      <div class="body">
+        <h3>体验版</h3>
+        <p>售价 9.9 元，内含 19.9 元余额。用户名固定：Sakura，先试试水。</p>
+        <button class="pick">选择此款</button>
+      </div>
+    </div>
     <div class="rcard glass" data-svc="经典款（¥59.9）">
-      <div class="thumb t-c1"><span class="bd">经典之选</span><span class="e">🎨</span><span class="price-tag">¥59.9 起</span></div>
+      <div class="thumb t-c2"><span class="bd">经典之选</span><span class="e">🎨</span><span class="price-tag">¥59.9</span></div>
       <div class="body">
         <h3>经典款</h3>
-        <p>精选经典图案可选，简单耐看，日常使用首选。</p>
+        <p>售价 59.9 元，内含 120 元余额。用户名固定：Sakura。</p>
         <button class="pick">选择此款</button>
       </div>
     </div>
     <div class="rcard glass" data-svc="精品款（¥99.9）">
-      <div class="thumb t-c2"><span class="bd">人气爆款</span><span class="e">⭐</span><span class="price-tag">¥99.9 起</span></div>
+      <div class="thumb t-c3"><span class="bd">人气爆款 · 够用一学期</span><span class="e">⭐</span><span class="price-tag">¥99.9</span></div>
       <div class="body">
         <h3>精品款</h3>
-        <p>图案 + 配色自选，升级材质质感更好，送人自用都合适。</p>
+        <p>售价 99.9 元，内含 200 元余额。用户名支持自定义（汉字 2～4 个字）。</p>
         <button class="pick">选择此款</button>
       </div>
     </div>
     <div class="rcard glass" data-svc="豪华款（¥125.99）">
-      <div class="thumb t-c3"><span class="bd">尊享定制</span><span class="e">💎</span><span class="price-tag">¥125.99 起</span></div>
+      <div class="thumb t-c4"><span class="bd">尊享定制</span><span class="e">💎</span><span class="price-tag">¥125.99</span></div>
       <div class="body">
         <h3>豪华款</h3>
-        <p>完全自由定制：图案 / 文字 / 专属设计，收藏级品质。</p>
+        <p>售价 125.99 元，内含 300 元余额。用户名自定义：汉字 1～4 个字（可改单字 ID），或英文最多 8 个字母（数字、符号）。</p>
+        <button class="pick">选择此款</button>
+      </div>
+    </div>
+    <div class="rcard glass" data-svc="内部卡（¥200）">
+      <div class="thumb t-c5"><span class="bd">限量内部</span><span class="e">🔥</span><span class="price-tag">¥200</span></div>
+      <div class="body">
+        <h3>内部卡</h3>
+        <p>售价 200 元，内含 520 元余额。用户名自定义：汉字 1～4 个字（可改单字 ID），或英文最多 8 个字母（数字、符号）。</p>
         <button class="pick">选择此款</button>
       </div>
     </div>
@@ -557,16 +575,24 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
       <div class="field">
         <label>选择款式 <span class="req">*</span></label>
         <select id="svc" required>
-          <option value="">请选择款式</option>
+          <option value="">请选择套餐</option>
+          <option>体验版（¥9.9）</option>
           <option>经典款（¥59.9）</option>
           <option>精品款（¥99.9）</option>
           <option>豪华款（¥125.99）</option>
+          <option>内部卡（¥200）</option>
           <option>还不确定，想先聊聊</option>
         </select>
       </div>
-      <div class="field">
-        <label>想要什么图案 / 风格？</label>
-        <input type="text" id="style" placeholder="例如：可爱风 / 简约风 / 指定图案或文字…">
+      <div class="field" id="usernameField" style="display:none">
+        <label>自定义用户名 <span class="req">*</span></label>
+        <input type="text" id="username" placeholder="汉字 1～4 个字，或英文/数字/符号最多 8 位" maxlength="8">
+        <p class="hint" style="margin:4px 0 0">规则：汉字 1～4 个字（可改单字 ID）；或英文名字最多 8 个字母（可含数字、符号）</p>
+      </div>
+      <div class="field" id="usernameFixed" style="display:none">
+        <label>用户名</label>
+        <input type="text" value="Sakura" readonly style="background:rgba(255,255,255,.45);color:var(--ink-3)">
+        <p class="hint" style="margin:4px 0 0">本套餐用户名固定为 Sakura</p>
       </div>
       <div class="field">
         <label>补充说明</label>
@@ -583,7 +609,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
     <div class="success" id="success">
       <div class="check">✓</div>
       <h3>需求已收到！</h3>
-      <p>请扫码付款，或添加我的微信备注「<span id="svcName">你的款式</span>」确认图案细节，付款后即可开始制作。</p>
+      <p>请扫码付款，或添加我的微信备注「<span id="svcName">你的套餐</span>」，付款后余额将自动到账并开通用户名。</p>
       <div class="wechat-box">
         <img src="qrcode.png" alt="微信收款码，扫码付款">
         <div class="id" id="wxId">微信号：k638666798k</div>
@@ -601,15 +627,19 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   <div class="faq">
     <details class="faq-item glass">
       <summary>如何付款？</summary>
-      <div class="ans">加微信确认款式和价格后，通过微信/支付宝转账付款，付款后开始制作。</div>
+      <div class="ans">加微信确认套餐后，通过微信/支付宝转账付款，付款后余额自动到账、用户名生效。</div>
     </details>
     <details class="faq-item glass">
-      <summary>多久发货？</summary>
-      <div class="ans">经典款 3 天内、精品款 2 天内发货，豪华款优先制作。具体以沟通为准。</div>
+      <summary>余额多久到账？</summary>
+      <div class="ans">付款后当天内到账，通常几分钟内开通。到账后即可正常使用。</div>
     </details>
     <details class="faq-item glass">
-      <summary>「用不了包退包换」是什么意思？</summary>
-      <div class="ans">收到货如果发现用不了、不适用，或与沟通不符，支持退换，放心下单。</div>
+      <summary>用户名规则是什么？</summary>
+      <div class="ans">体验版/经典款用户名固定为 Sakura。精品款：汉字 2～4 个字；豪华款/内部卡：汉字 1～4 个字（可改单字 ID），或英文名字最多 8 个字母（可含数字、符号）。</div>
+    </details>
+    <details class="faq-item glass">
+      <summary>「用不了包退」是什么意思？</summary>
+      <div class="ans">开通后发现用不了、余额未到账或与沟通不符，支持退款，放心下单。</div>
     </details>
   </div>
 </div>
@@ -955,6 +985,27 @@ document.querySelectorAll('.pick').forEach(btn => {
   });
 });
 
+/* 套餐选择 → 用户名输入框联动 */
+(function(){
+  var sel = document.getElementById('svc');
+  var uf = document.getElementById('usernameField');
+  var ux = document.getElementById('usernameFixed');
+  function syncUsername(){
+    var v = sel.value;
+    var custom = /精品款|豪华款|内部卡/.test(v);
+    if(!v){ uf.style.display='none'; ux.style.display='none'; return; }
+    uf.style.display = custom ? 'block' : 'none';
+    ux.style.display = custom ? 'none' : 'block';
+  }
+  sel.addEventListener('change', syncUsername);
+  document.querySelectorAll('.pick').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setTimeout(syncUsername, 0);
+    });
+  });
+  syncUsername();
+})();
+
 /* ===== 订单提交 → Supabase ===== */
 const SUPABASE_URL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
@@ -964,6 +1015,18 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   const svc = document.getElementById('svc');
   const contact = document.getElementById('contact').value.trim();
   if(!svc.value || !contact){ showToast('请填写必填项'); return; }
+  const isCustom = /精品款|豪华款|内部卡/.test(svc.value);
+  const isLux = /豪华款|内部卡/.test(svc.value);
+  let username = 'Sakura';
+  if(isCustom){
+    username = document.getElementById('username').value.trim();
+    if(!username){ showToast('请填写自定义用户名'); return; }
+    const hanRe = isLux ? /^[\u4e00-\u9fa5]{1,4}$/ : /^[\u4e00-\u9fa5]{2,4}$/;
+    const enRe = /^[A-Za-z0-9!@#$%^&*._\-]{1,8}$/;
+    if(!hanRe.test(username) && !(isLux && enRe.test(username))){
+      showToast('用户名需为汉字 ' + (isLux?'1':'2') + '~4 个字' + (isLux ? '，或英文/数字/符号最多 8 位' : '') + ''); return;
+    }
+  }
 
   const btn = this.querySelector('.submit-btn');
   btn.disabled = true; btn.textContent = '提交中…';
@@ -978,8 +1041,8 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
       },
       body: JSON.stringify({
         service: svc.value,
-        style: document.getElementById('style').value || '',
-        detail: document.getElementById('detail').value || '',
+        style: '用户名：' + username,
+        detail: (document.getElementById('detail').value || '') + (isCustom ? ('（用户名：' + username + '）') : ''),
         contact: contact
       })
     });
