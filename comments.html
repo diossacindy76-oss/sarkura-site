@@ -341,6 +341,18 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .cm-form input,.cm-form textarea{border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.65);border-radius:12px;padding:10px 12px;font-size:13.5px;font-family:inherit;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;resize:none}
 .cm-form input:focus,.cm-form textarea:focus{border-color:rgba(236,72,153,.5);box-shadow:0 0 0 3px rgba(236,72,153,.12)}
 .cm-form input::placeholder,.cm-form textarea::placeholder{color:var(--ink-3)}
+.cm-img-row{display:flex;align-items:center;gap:10px;margin-top:2px}
+.cm-img-pick{display:inline-flex;align-items:center;gap:6px;background:rgba(236,72,153,.1);border:1px dashed rgba(236,72,153,.45);color:var(--brand-deep);font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
+.cm-img-pick:active{transform:scale(.95)}
+.cm-img-pick input{display:none}
+.cm-img-prev{position:relative;width:64px;height:64px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(0,0,0,.1);flex:none}
+.cm-img-prev img{width:100%;height:100%;object-fit:cover;display:block}
+.cm-img-del{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:11px;line-height:18px;text-align:center;cursor:pointer;border:none}
+.cm-img{width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-top:8px;border:1px solid rgba(255,255,255,.85);display:block}
+.reply-img-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(236,72,153,.1);border:1px dashed rgba(236,72,153,.4);font-size:15px;cursor:pointer;flex:none;transition:all .2s}
+.reply-img-btn:active{transform:scale(.92)}
+.reply-img-prev{display:flex;align-items:center;gap:10px;padding:8px 12px 0}
+.reply-img-prev .cm-img-prev{margin:0}
 .cm-btn{align-self:flex-end;background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;border:none;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
 .cm-btn:active{transform:scale(.96)}
 .cm-btn:disabled{opacity:.6;cursor:not-allowed}
@@ -438,6 +450,10 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
       <div class="cm-write" id="cmWrite" style="display:none">
         <div class="cm-user" id="cmUser"></div>
         <textarea id="cmText" maxlength="500" rows="3" placeholder="登录后留言，昵称自动显示～"></textarea>
+        <div class="cm-img-row">
+          <label class="cm-img-pick">📷 添加图片<input type="file" id="cmImg" accept="image/jpeg,image/png,image/webp,image/gif"></label>
+          <div class="cm-img-prev" id="cmImgPrev" style="display:none"><img id="cmImgPrevImg" alt=""><button class="cm-img-del" id="cmImgDel">✕</button></div>
+        </div>
         <button class="cm-btn" id="cmBtn">发布留言</button>
       </div>
     </div>
@@ -455,8 +471,10 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
     <div class="reply-list" id="replyList"></div>
     <div class="reply-input-bar">
       <input id="replyInput" maxlength="500" placeholder="回复：">
+      <label class="reply-img-btn" title="添加图片">📷<input type="file" id="replyImg" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none"></label>
       <button id="replySend" class="cm-btn">发送</button>
     </div>
+    <div class="reply-img-prev" id="replyImgPrev" style="display:none"><img id="replyImgPrevImg" alt=""><button class="cm-img-del" id="replyImgDel">✕</button></div>
   </div>
 </div>
 
@@ -603,6 +621,24 @@ function showToast(msg){
   var btn = document.getElementById('cmBtn');
   var CURL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
   var CKEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
+  /* 评论图片上传 */
+  function uploadImg(file, token){
+    return new Promise(function(res, rej){
+      var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      if(['jpg','jpeg','png','webp','gif'].indexOf(ext) < 0) ext = 'jpg';
+      var name = Date.now() + '_' + Math.random().toString(36).slice(2,8) + '.' + ext;
+      fetch(CURL + '/storage/v1/object/comment-img/' + name, {
+        method: 'POST',
+        headers: { 'apikey': CKEY, 'Authorization': 'Bearer ' + token, 'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'false' },
+        body: file
+      }).then(function(r){ return r.json(); })
+        .then(function(d){
+          if(d && (d.Key || d.path)){
+            res(CURL + '/storage/v1/object/public/comment-img/' + (d.Key || d.path).replace(/^comment-img\//,''));
+          } else { rej(new Error('upload fail')); }
+        }).catch(rej);
+    });
+  }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function timeAgo(ts){
     var d = new Date(ts), diff = (Date.now() - d.getTime())/1000;
@@ -626,6 +662,7 @@ function showToast(msg){
         '<div class="cm-body">' +
           '<div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
           '<div class="cm-text">' + esc(c.content) + '</div>' +
+          (c.image_url ? '<img class="cm-img" src="' + esc(c.image_url) + '" loading="lazy" onclick="window.open(this.src)" style="cursor:zoom-in">' : '') +
           '<div class="cm-actions"><button class="cm-reply-btn" data-id="' + c.id + '" data-name="' + esc(c.nickname||'匿名') + '">💬 回复' + (rep.length ? ' (' + rep.length + ')' : '') + '</button></div>' +
         '</div>' +
       '</div>';
@@ -647,6 +684,22 @@ function showToast(msg){
     write.style.display = u ? 'block' : 'none';
     if(u){ userEl.innerHTML = '💬 留言将以 <b>' + esc(u.username) + '</b> 的身份发布'; }
   }
+  /* 图片选择与预览 */
+  var imgInput = document.getElementById('cmImg');
+  var imgPrev = document.getElementById('cmImgPrev');
+  var imgPrevImg = document.getElementById('cmImgPrevImg');
+  var imgDel = document.getElementById('cmImgDel');
+  var pendingImg = null;
+  imgInput.addEventListener('change', function(){
+    var f = imgInput.files[0];
+    if(!f) return;
+    if(f.size > 5*1024*1024){ showToast('图片不能超过 5MB'); imgInput.value=''; return; }
+    var rd = new FileReader();
+    rd.onload = function(e){ pendingImg = f; imgPrevImg.src = e.target.result; imgPrev.style.display = 'block'; };
+    rd.readAsDataURL(f);
+  });
+  imgDel.addEventListener('click', function(){ pendingImg = null; imgInput.value=''; imgPrev.style.display='none'; });
+
   btn.addEventListener('click', function(){
     var u = auth();
     if(!u){ showToast('请先登录'); if(window.openAuth) window.openAuth(); return; }
@@ -654,18 +707,23 @@ function showToast(msg){
     if(!content){ showToast('写点什么再发布吧'); return; }
     if(content.length > 500){ showToast('内容太长啦（最多500字）'); return; }
     btn.disabled = true; btn.textContent = '发布中…';
-    fetch(CURL + '/rest/v1/rpc/insert_comment', {
-      method: 'POST',
-      headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_token: u.token, p_content: content })
-    }).then(function(r){ return r.json(); })
+    var doPublish = function(imageUrl){
+      fetch(CURL + '/rest/v1/rpc/insert_comment', {
+        method: 'POST',
+        headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_token: u.token, p_content: content, p_image_url: imageUrl || null })
+      }).then(function(r){ return r.json(); })
       .then(function(d){
-        if(d && d.ok){ textEl.value = ''; showToast('留言已发布 🎉'); load(); }
+        if(d && d.ok){ textEl.value = ''; pendingImg = null; imgInput.value=''; imgPrev.style.display='none'; showToast('留言已发布 🎉'); load(); }
         else if(d && d.code === 'noauth'){ localStorage.removeItem('sk_user'); refresh(); showToast('登录已失效，请重新登录'); if(window.openAuth) window.openAuth(); }
         else { showToast((d && d.msg) || '发布失败，请稍后再试'); }
       })
       .catch(function(){ showToast('发布失败，请稍后再试'); })
       .finally(function(){ btn.disabled = false; btn.textContent = '发布留言'; });
+    };
+    if(pendingImg){
+      uploadImg(pendingImg, u.token).then(function(url){ doPublish(url); }).catch(function(){ showToast('图片上传失败，请重试'); btn.disabled = false; btn.textContent = '发布留言'; });
+    } else { doPublish(null); }
   });
   /* 抖音式回复弹层 */
   var mask = document.getElementById('replyMask');
@@ -680,10 +738,10 @@ function showToast(msg){
     if(!c) return;
     repTo = { id: id, name: name };
     document.getElementById('replyClose').onclick = closeReply;
-    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div>';
+    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div>' + (c.image_url ? '<img class="cm-img" src="' + esc(c.image_url) + '" loading="lazy" onclick="window.open(this.src)" style="cursor:zoom-in">' : '') + '</div>';
     var reps = c.replies || [];
     replyList.innerHTML = reps.length ? reps.map(function(r){
-      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(r.nickname, r.title) + '<span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div></div></div>';
+      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(r.nickname, r.title) + '<span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div>' + (r.image_url ? '<img class="cm-img" src="' + esc(r.image_url) + '" loading="lazy" onclick="window.open(this.src)" style="cursor:zoom-in">' : '') + '</div></div>';
     }).join('') : '<div class="cm-empty">还没有回复，快来抢沙发 🌸</div>';
     replyInput.placeholder = '回复 @' + name + '：';
     mask.style.display = 'flex';
@@ -702,19 +760,39 @@ function showToast(msg){
     if(!content){ showToast('写点什么再回复吧'); return; }
     if(content.length > 500){ showToast('内容太长啦（最多500字）'); return; }
     replySend.disabled = true; replySend.textContent = '发送中…';
-    fetch(CURL + '/rest/v1/rpc/insert_comment', {
-      method: 'POST',
-      headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_token: u.token, p_content: content, p_parent_id: repTo.id })
-    }).then(function(r){ return r.json(); })
+    var doReply = function(imageUrl){
+      fetch(CURL + '/rest/v1/rpc/insert_comment', {
+        method: 'POST',
+        headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_token: u.token, p_content: content, p_parent_id: repTo.id, p_image_url: imageUrl || null })
+      }).then(function(r){ return r.json(); })
       .then(function(d){
-        if(d && d.ok){ replyInput.value = ''; closeReply(); showToast('回复成功 🎉'); load(); }
+        if(d && d.ok){ replyInput.value = ''; repImgInput.value=''; repImgPrev.style.display='none'; repPendingImg=null; closeReply(); showToast('回复成功 🎉'); load(); }
         else if(d && d.code === 'noauth'){ localStorage.removeItem('sk_user'); refresh(); showToast('登录已失效，请重新登录'); if(window.openAuth) window.openAuth(); }
         else { showToast((d && d.msg) || '回复失败，请稍后再试'); }
       })
       .catch(function(){ showToast('回复失败，请稍后再试'); })
       .finally(function(){ replySend.disabled = false; replySend.textContent = '发送'; });
+    };
+    if(repPendingImg){
+      uploadImg(repPendingImg, u.token).then(function(url){ doReply(url); }).catch(function(){ showToast('图片上传失败，请重试'); replySend.disabled = false; replySend.textContent = '发送'; });
+    } else { doReply(null); }
   });
+  /* 回复图片选择预览 */
+  var repImgInput = document.getElementById('replyImg');
+  var repImgPrev = document.getElementById('replyImgPrev');
+  var repImgPrevImg = document.getElementById('replyImgPrevImg');
+  var repImgDel = document.getElementById('replyImgDel');
+  var repPendingImg = null;
+  repImgInput.addEventListener('change', function(){
+    var f = repImgInput.files[0];
+    if(!f) return;
+    if(f.size > 5*1024*1024){ showToast('图片不能超过 5MB'); repImgInput.value=''; return; }
+    var rd = new FileReader();
+    rd.onload = function(e){ repPendingImg = f; repImgPrevImg.src = e.target.result; repImgPrev.style.display = 'flex'; };
+    rd.readAsDataURL(f);
+  });
+  repImgDel.addEventListener('click', function(){ repPendingImg = null; repImgInput.value=''; repImgPrev.style.display='none'; });
   window.addEventListener('sk_user_changed', refresh);
   refresh();
   load();
