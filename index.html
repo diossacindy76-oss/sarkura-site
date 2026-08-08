@@ -197,6 +197,10 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 /* ===== 音乐按钮（液态玻璃悬浮） ===== */
+.comment-fab{position:fixed;right:84px;bottom:20px;z-index:120;display:inline-flex;align-items:center;gap:6px;padding:13px 18px;border-radius:999px;background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;font-size:13.5px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(139,92,246,.4);animation:fabPulse 2.8s ease-in-out infinite;transition:transform .2s}
+.comment-fab:active{transform:scale(.92)}
+.comment-fab .cf-dot{width:8px;height:8px;border-radius:50%;background:#ffd166;box-shadow:0 0 8px #ffd166;animation:cfBlink 1.6s ease-in-out infinite}
+@keyframes cfBlink{0%,100%{opacity:1}50%{opacity:.35}}
 .music-fab{position:fixed;right:18px;bottom:18px;z-index:120;width:56px;height:56px;border-radius:50%;
   background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.4));
   backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
@@ -605,6 +609,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 
 <!-- ===== 音乐悬浮按钮 ===== -->
 <button class="music-fab" id="musicFab" aria-label="音乐">🎵</button>
+<a class="comment-fab" href="comments.html" aria-label="评论区">💬 <span>评论区</span><span class="cf-dot"></span></a>
 
 <!-- ===== 歌词面板 ===== -->
 <div class="lyric-panel" id="lyricPanel">
