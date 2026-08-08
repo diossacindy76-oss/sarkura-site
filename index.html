@@ -338,13 +338,20 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .cm-time{font-size:11px;color:var(--ink-3)}
 .cm-text{font-size:13.5px;color:var(--ink-2);line-height:1.6;word-break:break-word;white-space:pre-wrap}
 .cm-form{display:flex;flex-direction:column;gap:10px}
-.cm-inputs{display:flex;flex-direction:column;gap:8px}
 .cm-form input,.cm-form textarea{border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.65);border-radius:12px;padding:10px 12px;font-size:13.5px;font-family:inherit;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;resize:none}
 .cm-form input:focus,.cm-form textarea:focus{border-color:rgba(236,72,153,.5);box-shadow:0 0 0 3px rgba(236,72,153,.12)}
 .cm-form input::placeholder,.cm-form textarea::placeholder{color:var(--ink-3)}
 .cm-btn{align-self:flex-end;background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;border:none;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
 .cm-btn:active{transform:scale(.96)}
 .cm-btn:disabled{opacity:.6;cursor:not-allowed}
+.cm-lock{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 16px;border-radius:16px;background:rgba(255,255,255,.4);border:1px dashed rgba(120,80,160,.3);color:var(--ink-3);font-size:14px}
+.cm-lock .cm-btn{align-self:auto}
+.cm-write .cm-user{font-size:13px;color:var(--ink-3);margin-bottom:10px}
+.cm-write textarea{width:100%;border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.65);border-radius:12px;padding:10px 12px;font-size:13.5px;font-family:inherit;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical;box-sizing:border-box}
+.cm-write textarea:focus{border-color:rgba(236,72,153,.5);box-shadow:0 0 0 3px rgba(236,72,153,.12)}
+.cm-write textarea::placeholder{color:var(--ink-3)}
+.cm-write .cm-btn{width:100%;margin-top:10px}
+
 
 
 /* ---- 登录/注册 ---- */
@@ -364,7 +371,6 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .auth-submit:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(244,114,182,.35)}
 .auth-submit:disabled{opacity:.6;transform:none}
 .auth-msg{color:#dc2626;font-size:12.5px;text-align:center;margin-top:12px;min-height:16px}
-.cm-auth{font-size:13px;color:var(--ink-3);padding:8px 12px;margin-bottom:12px;border-radius:12px;background:rgba(255,255,255,.45);border:1px dashed rgba(120,80,160,.25)}
 </style>
 </head>
 <body>
@@ -577,13 +583,16 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   </div>
   <div class="comments glass" id="comments">
     <div class="cm-list" id="cmList"><div class="cm-empty">加载中…</div></div>
-      <div class="cm-auth" id="cmAuth">💬 登录后留言显示你的昵称</div>
 <div class="cm-form">
-      <div class="cm-inputs">
-        <input type="text" id="cmName" maxlength="20" placeholder="你的昵称（选填）">
-        <textarea id="cmText" maxlength="500" rows="3" placeholder="定制咨询、意见反馈都可以，说点什么吧～"></textarea>
+      <div class="cm-lock" id="cmLock">
+        <span>🔒 登录后才能留言</span>
+        <button class="cm-btn" onclick="openAuth()">登录 / 注册</button>
       </div>
-      <button class="cm-btn" id="cmBtn">发布留言</button>
+      <div class="cm-write" id="cmWrite" style="display:none">
+        <div class="cm-user" id="cmUser"></div>
+        <textarea id="cmText" maxlength="500" rows="3" placeholder="登录后留言，昵称自动显示～"></textarea>
+        <button class="cm-btn" id="cmBtn">发布留言</button>
+      </div>
     </div>
   </div>
 </div>
@@ -626,13 +635,13 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
     </div>
     <div class="auth-body">
       <div id="authLogin">
-        <input type="email" id="lgEmail" placeholder="邮箱" autocomplete="email">
+        <input type="text" id="lgName" placeholder="用户名" autocomplete="username">
         <input type="password" id="lgPwd" placeholder="密码" autocomplete="current-password">
         <button class="auth-submit" id="lgBtn">登 录</button>
       </div>
       <div id="authReg" style="display:none">
-        <input type="text" id="rgName" maxlength="20" placeholder="昵称（选填）">
-        <input type="email" id="rgEmail" placeholder="邮箱" autocomplete="email">
+        <input type="text" id="rgName" maxlength="20" placeholder="用户名（2-20 字）">
+        <input type="text" id="rgContact" maxlength="40" placeholder="联系方式（微信/手机号）">
         <input type="password" id="rgPwd" placeholder="密码（至少 6 位）" autocomplete="new-password">
         <button class="auth-submit" id="rgBtn">注 册</button>
       </div>
@@ -1078,63 +1087,71 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
 })();
 
 
-/* ---- 评论区 ---- */
+/* ---- 评论区（强制登录） ---- */
 (function(){
   var list = document.getElementById('cmList');
   if(!list) return;
-  var nameEl = document.getElementById('cmName');
+  var lock = document.getElementById('cmLock');
+  var write = document.getElementById('cmWrite');
+  var userEl = document.getElementById('cmUser');
   var textEl = document.getElementById('cmText');
   var btn = document.getElementById('cmBtn');
   var CURL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
   var CKEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
-  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function timeAgo(ts){
     var d = new Date(ts), diff = (Date.now() - d.getTime())/1000;
     if(diff < 60) return '刚刚';
     if(diff < 3600) return Math.floor(diff/60) + ' 分钟前';
     if(diff < 86400) return Math.floor(diff/3600) + ' 小时前';
     if(diff < 604800) return Math.floor(diff/86400) + ' 天前';
-    return (d.getMonth()+1) + '-' + d.getDate();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   }
-  function render(items){
-    if(!items || !items.length){ list.innerHTML = '<div class="cm-empty">还没有留言，来抢沙发～🌸</div>'; return; }
-    list.innerHTML = items.map(function(c){
-      var av = (c.nickname || '匿').trim().charAt(0);
-      return '<div class="cm-item"><div class="cm-av">' + esc(av) + '</div><div class="cm-body">' +
-        '<div class="cm-meta"><span class="cm-name">' + esc(c.nickname || '匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
-        '<div class="cm-text">' + esc(c.content) + '</div></div></div>';
+  function render(cs){
+    if(!cs.length){ list.innerHTML = '<div class="cm-empty">还没有留言，登录后抢沙发 🌸</div>'; return; }
+    list.innerHTML = cs.map(function(c){
+      return '<div class="cm-item"><div class="cm-av">' + esc((c.nickname||'匿').slice(0,1)) + '</div><div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div></div>';
     }).join('');
   }
   function load(){
     fetch(CURL + '/rest/v1/comments?select=*&order=created_at.desc&limit=50', { headers: { 'apikey': CKEY } })
       .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(render)
-      .catch(function(){ list.innerHTML = '<div class="cm-empty">评论区即将开放，敬请期待 🌸</div>'; });
+      .catch(function(){ list.innerHTML = '<div class="cm-empty">评论区暂时无法加载 🌸</div>'; });
+  }
+  function auth(){ try{ return JSON.parse(localStorage.getItem('sk_user')||'null'); }catch(e){ return null; } }
+  function refresh(){
+    var u = auth();
+    lock.style.display = u ? 'none' : 'flex';
+    write.style.display = u ? 'block' : 'none';
+    if(u){ userEl.innerHTML = '💬 留言将以 <b>' + esc(u.username) + '</b> 的身份发布'; }
   }
   btn.addEventListener('click', function(){
-    var name = nameEl.value.trim().slice(0,20);
+    var u = auth();
+    if(!u){ showToast('请先登录'); if(window.openAuth) window.openAuth(); return; }
     var content = textEl.value.trim();
     if(!content){ showToast('写点什么再发布吧'); return; }
     if(content.length > 500){ showToast('内容太长啦（最多500字）'); return; }
     btn.disabled = true; btn.textContent = '发布中…';
-    fetch(CURL + '/rest/v1/comments', {
+    fetch(CURL + '/rest/v1/rpc/insert_comment', {
       method: 'POST',
-      headers: { 'apikey': CKEY, 'Authorization': 'Bearer ' + CKEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
-      body: JSON.stringify({ nickname: name || '匿名', content: content })
-    }).then(function(r){
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }).then(function(){
-      textEl.value = '';
-      showToast('留言已发布 🎉');
-      load();
-    }).catch(function(){ showToast('发布失败，请稍后再试'); })
+      headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_token: u.token, p_content: content })
+    }).then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.ok){ textEl.value = ''; showToast('留言已发布 🎉'); load(); }
+        else if(d && d.code === 'noauth'){ localStorage.removeItem('sk_user'); refresh(); showToast('登录已失效，请重新登录'); if(window.openAuth) window.openAuth(); }
+        else { showToast((d && d.msg) || '发布失败，请稍后再试'); }
+      })
+      .catch(function(){ showToast('发布失败，请稍后再试'); })
       .finally(function(){ btn.disabled = false; btn.textContent = '发布留言'; });
   });
+  window.addEventListener('sk_user_changed', refresh);
+  refresh();
   load();
 })();
 
-/* ---- 用户注册/登录 ---- */
+/* ---- 用户注册/登录（用户名+联系方式，评论强制登录） ---- */
 (function(){
   var MASK = document.getElementById('authMask');
   var BTN = document.getElementById('authBtn');
@@ -1145,25 +1162,19 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   var me = null;
   try{ me = JSON.parse(localStorage.getItem(LS)||'null'); }catch(e){}
   function $(id){ return document.getElementById(id); }
-  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-  function api(path, opts){
-    return fetch(CURL + path, Object.assign({headers:{'apikey':CKEY,'Content-Type':'application/json'}}, opts||{}));
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function emit(){ window.dispatchEvent(new Event('sk_user_changed')); }
+  function api(path, opts){ return fetch(CURL + path, Object.assign({ headers: { 'apikey': CKEY, 'Content-Type': 'application/json' } }, opts || {})); }
+  function hashPwd(pwd, uname){
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(pwd), 'PBKDF2', false, ['deriveBits'])
+      .then(function(k){ return crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode('sarkura:' + String(uname).toLowerCase()), iterations: 100000, hash: 'SHA-256' }, k, 256); })
+      .then(function(b){ return Array.from(new Uint8Array(b)).map(function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); });
   }
   function applyUI(){
-    if(me && me.token){
-      BTN.style.display = 'none';
-      USER.style.display = 'inline-flex';
-      USER.innerHTML = '👤 ' + esc(me.nickname || me.email);
-      var cm = $('cmAuth'); if(cm) cm.innerHTML = '💬 已登录为 <b>' + esc(me.nickname||me.email) + '</b>，留言将显示你的昵称';
-      var nameEl = $('cmName');
-      if(nameEl){ nameEl.value = me.nickname||''; nameEl.readOnly = true; nameEl.style.opacity = '.7'; nameEl.title = '登录后昵称已锁定'; }
-    }else{
-      BTN.style.display = '';
-      USER.style.display = 'none';
-      var cm = $('cmAuth'); if(cm) cm.innerHTML = '💬 登录后留言显示你的昵称';
-      var nameEl = $('cmName');
-      if(nameEl){ nameEl.readOnly = false; nameEl.style.opacity = ''; nameEl.title = ''; }
-    }
+    if(me && me.token){ BTN.style.display = 'none'; USER.style.display = 'inline-flex'; USER.innerHTML = '👤 ' + esc(me.username); }
+    else { BTN.style.display = ''; USER.style.display = 'none'; }
+    emit();
   }
   function save(d){ me = d; localStorage.setItem(LS, JSON.stringify(d)); applyUI(); }
   function switchTab(t){
@@ -1176,51 +1187,49 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   }
   function showMask(){ MASK.style.display = 'flex'; switchTab('login'); }
   function hideMask(){ MASK.style.display = 'none'; }
-
+  window.openAuth = showMask;
   BTN.addEventListener('click', showMask);
   $('authClose').addEventListener('click', hideMask);
   MASK.addEventListener('click', function(e){ if(e.target === MASK) hideMask(); });
   MASK.querySelectorAll('.auth-tab').forEach(function(t){
     t.addEventListener('click', function(){ switchTab(t.getAttribute('data-tab')); });
   });
-
   $('lgBtn').addEventListener('click', async function(){
-    var email = $('lgEmail').value.trim(), pwd = $('lgPwd').value;
-    var msg = $('authMsg');
-    if(!email || !pwd){ msg.textContent = '请填写邮箱和密码'; return; }
+    var name = $('lgName').value.trim(), pwd = $('lgPwd').value, msg = $('authMsg');
+    if(!name || !pwd){ msg.textContent = '请填写用户名和密码'; return; }
     this.disabled = true;
     try{
-      var r = await api('/auth/v1/token?grant_type=password', {method:'POST', body: JSON.stringify({email:email, password:pwd})});
+      var h = await hashPwd(pwd, name);
+      var r = await api('/rest/v1/rpc/login_user', { method: 'POST', body: JSON.stringify({ p_username: name, p_pass_hash: h }) });
       var d = await r.json();
-      if(!r.ok){ msg.textContent = d.error_description || d.msg || d.error || '登录失败'; return; }
-      var nm = (d.user && d.user.user_metadata && d.user.user_metadata.nickname) || '';
-      save({token: d.access_token, email: email, nickname: nm});
-      hideMask(); showToast('欢迎回来，' + (nm||email) + ' 🌸');
+      if(!d.ok){ msg.textContent = (d && d.msg) || '登录失败'; return; }
+      save({ token: d.token, username: d.username, contact: d.contact });
+      hideMask(); showToast('欢迎回来，' + d.username + ' 🌸');
     }catch(e){ msg.textContent = '网络错误，请重试'; }
     finally{ this.disabled = false; }
   });
-
   $('rgBtn').addEventListener('click', async function(){
-    var nm = $('rgName').value.trim().slice(0,20);
-    var email = $('rgEmail').value.trim(), pwd = $('rgPwd').value;
-    var msg = $('authMsg');
-    if(!email || !pwd){ msg.textContent = '请填写邮箱和密码'; return; }
+    var name = $('rgName').value.trim(), contact = $('rgContact').value.trim(), pwd = $('rgPwd').value, msg = $('authMsg');
+    if(name.length < 2){ msg.textContent = '用户名需 2-20 个字符'; return; }
+    if(!contact){ msg.textContent = '请填写联系方式（微信/手机号）'; return; }
     if(pwd.length < 6){ msg.textContent = '密码至少 6 位'; return; }
     this.disabled = true;
     try{
-      var r = await api('/auth/v1/signup', {method:'POST', body: JSON.stringify({email:email, password:pwd, data:{nickname: nm || email.split('@')[0]}})});
+      var h = await hashPwd(pwd, name);
+      var r = await api('/rest/v1/rpc/register_user', { method: 'POST', body: JSON.stringify({ p_username: name, p_contact: contact, p_pass_hash: h }) });
       var d = await r.json();
-      if(!r.ok){ msg.textContent = d.msg || d.error_description || '注册失败'; return; }
-      if(d.access_token){ save({token: d.access_token, email: email, nickname: nm || email.split('@')[0]}); hideMask(); showToast('注册成功，欢迎加入 🌸'); }
-      else { msg.textContent = '注册成功！请前往邮箱验证后登录'; }
+      if(!d.ok){ msg.textContent = (d && d.msg) || '注册失败'; return; }
+      save({ token: d.token, username: d.username, contact: d.contact });
+      hideMask(); showToast('注册成功，欢迎加入 🌸');
     }catch(e){ msg.textContent = '网络错误，请重试'; }
     finally{ this.disabled = false; }
   });
-
   USER.addEventListener('click', function(){
-    if(confirm('退出登录？')){ me = null; localStorage.removeItem(LS); applyUI(); showToast('已退出登录'); }
+    if(confirm('退出登录？')){
+      if(me && me.token){ try{ api('/rest/v1/rpc/logout_user', { method: 'POST', body: JSON.stringify({ p_token: me.token }) }); }catch(e){} }
+      me = null; localStorage.removeItem(LS); applyUI(); showToast('已退出登录');
+    }
   });
-
   applyUI();
 })();
 
