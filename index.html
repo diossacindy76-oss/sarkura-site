@@ -240,6 +240,64 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   .cta{flex-direction:column}
   .pcard{width:196px;height:272px}
 }
+
+/* ===== 美化增强 ===== */
+
+/* ---- 点击花瓣 ---- */
+#petalFx{position:fixed;inset:0;pointer-events:none;z-index:2147483000;overflow:hidden}
+.petal-fx{position:absolute;border-radius:70% 0 70% 0;opacity:0;pointer-events:none;will-change:transform,opacity;
+  animation:petalBurst .9s cubic-bezier(.15,.6,.35,1) var(--delay,0s) forwards}
+@keyframes petalBurst{
+  0%{transform:translate(-50%,-50%) rotate(0) scale(1);opacity:1}
+  70%{opacity:.85}
+  100%{transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(.3);opacity:0}
+}
+
+/* ---- 滚动渐显 ---- */
+.reveal{opacity:0;transform:translateY(28px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .7s ease,transform .7s ease}
+
+/* ---- 流光边框 ---- */
+.rcard.glass::before,.maker::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;
+  background:linear-gradient(120deg,#ec4899,#8b5cf6,#60a5fa,#f472b6,#ec4899);
+  background-size:300% 300%;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .45s ease;pointer-events:none;z-index:3;
+  animation:borderFlow 4s linear infinite}
+.rcard.glass:hover::before,.maker:hover::before{opacity:1}
+@keyframes borderFlow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.rcard.glass:hover,.maker:hover{box-shadow:0 16px 44px rgba(140,100,200,.25),0 0 30px rgba(236,72,153,.3),0 0 14px rgba(139,92,246,.25)}
+
+/* ---- 频谱 ---- */
+.spec-cv{width:100%;height:34px;display:block;margin:2px 0 6px;opacity:.95}
+
+/* ---- 标题逐字 ---- */
+.cover-info h1{background-size:220% auto;animation:titleShine 6s ease-in-out 1.4s infinite alternate}
+.cover-info h1 .tf{opacity:0;filter:blur(10px);animation:titleUp .7s cubic-bezier(.2,.7,.25,1) forwards}
+@keyframes titleUp{to{opacity:1;filter:blur(0)}}
+@keyframes titleShine{from{background-position:0% 50%}to{background-position:100% 50%}}
+
+
+/* ---- 主界面歌词 ---- */
+.main-lyric{padding:20px 22px;margin-bottom:22px;text-align:center;overflow:hidden}
+.main-lyric .ml-status{font-size:12px;color:var(--ink-3);letter-spacing:2px;margin-bottom:10px;transition:color .3s}
+.main-lyric.playing .ml-status{color:var(--brand-deep)}
+.main-lyric .ml-line{min-height:44px;display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap}
+.main-lyric .ml-line .ch{display:inline-block;font-size:clamp(20px,5vw,26px);font-weight:800;
+  background:linear-gradient(120deg,#be185d,#7c3aed 60%,#2563eb);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:.85}
+.main-lyric.playing .ml-line .ch{animation:charJump .55s ease-in-out infinite}
+.main-lyric .ml-line .ph{display:inline-block;font-size:15px;color:var(--ink-3);letter-spacing:2px}
+@keyframes charJump{
+  0%,100%{transform:translateY(0)}
+  30%{transform:translateY(-9px)}
+  55%{transform:translateY(0)}
+  72%{transform:translateY(-4px)}
+}
+
 </style>
 </head>
 <body>
@@ -289,7 +347,14 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 </section>
 
 <div class="container">
-  <!-- ===== 商品信息 ===== -->
+  
+  <!-- ===== 主界面歌词（跳动） ===== -->
+  <div class="main-lyric glass" id="mainLyric">
+    <div class="ml-status">♪ 点右下角 🎵 播放《失眠》</div>
+    <div class="ml-line"></div>
+  </div>
+
+<!-- ===== 商品信息 ===== -->
   <div class="specs glass" id="specs">
     <div class="spec"><div class="ic">📦</div><div><div class="lab">档位</div><div class="val">经典 / 精品 / 豪华</div></div></div>
     <div class="spec"><div class="ic">🎨</div><div><div class="lab">风格</div><div class="val">图案 / 配色 / 文字可定制</div></div></div>
@@ -683,6 +748,186 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     btn.disabled = false; btn.textContent = '提交需求';
   }
 });
+
+/* ========== 美化特效增强 ========== */
+
+/* ---- 点击花瓣 ---- */
+(function(){
+  var wrap = document.getElementById('petalFx');
+  if(!wrap){ wrap = document.createElement('div'); wrap.id = 'petalFx'; document.body.appendChild(wrap); }
+  var COLORS = ['#ffc4dd','#ffb3d1','#f9a8d4','#fda4af','#fbcfe8','#ffd7e8'];
+  document.addEventListener('pointerdown', function(e){
+    if(e.target && e.target.closest && e.target.closest('button,a,input,select,textarea')) return;
+    var count = 6 + Math.floor(Math.random()*3);
+    for(var i=0;i<count;i++){
+      var p = document.createElement('i');
+      p.className = 'petal-fx';
+      var size = 10 + Math.random()*8;
+      p.style.width = size + 'px';
+      p.style.height = (size*0.85) + 'px';
+      p.style.background = COLORS[Math.floor(Math.random()*COLORS.length)];
+      p.style.left = e.clientX + 'px';
+      p.style.top = e.clientY + 'px';
+      var ang = Math.random()*Math.PI*2;
+      var dist = 28 + Math.random()*52;
+      p.style.setProperty('--dx', Math.round(Math.cos(ang)*dist) + 'px');
+      p.style.setProperty('--dy', Math.round(Math.sin(ang)*dist + 34) + 'px');
+      p.style.setProperty('--rot', Math.round(Math.random()*560-280) + 'deg');
+      p.style.setProperty('--delay', (Math.random()*0.1).toFixed(2) + 's');
+      wrap.appendChild(p);
+      p.addEventListener('animationend', function(){ p.remove(); });
+    }
+    while(wrap.children.length > 70) wrap.firstChild.remove();
+  }, {passive:true});
+})();
+
+/* ---- 滚动渐显 ---- */
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  var els = document.querySelectorAll('.specs,.maker,.cta,.tags,#reco,.reco,.rcard,.order-box,#order,.faq,#faq,.sec-head');
+  var seen = new Set();
+  els.forEach(function(el){ if(!seen.has(el)){ seen.add(el); el.classList.add('reveal'); } });
+  var rcards = document.querySelectorAll('.rcard');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        var el = en.target;
+        el.classList.add('in');
+        setTimeout(function(){
+          el.classList.remove('reveal');
+          el.classList.remove('in');
+          el.style.transitionDelay = '';
+        }, 950);
+        io.unobserve(el);
+      }
+    });
+  }, {threshold:0.1, rootMargin:'0px 0px -6% 0px'});
+  seen.forEach(function(el){
+    if(el.classList.contains('rcard')){
+      var i = Array.prototype.indexOf.call(rcards, el);
+      el.style.transitionDelay = (i*90) + 'ms';
+    }
+    io.observe(el);
+  });
+})();
+
+/* ---- 频谱可视化 ---- */
+(function(){
+  var panel = document.getElementById('lyricPanel');
+  var audioEl = (typeof audio !== 'undefined') ? audio : null;
+  if(!panel || !audioEl) return;
+  var cv = document.createElement('canvas');
+  cv.id = 'specCv';
+  cv.className = 'spec-cv';
+  var prog = panel.querySelector('.lyric-progress');
+  if(prog) prog.after(cv);
+  else panel.insertBefore(cv, panel.querySelector('.lyric-list'));
+  var sctx = cv.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function fit(){
+    cv.width = (cv.clientWidth || panel.clientWidth || 300) * dpr;
+    cv.height = (cv.clientHeight || 34) * dpr;
+  }
+  fit(); window.addEventListener('resize', fit);
+  var analyser = null, dataArr = null, actx = null;
+  try{
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    var src = actx.createMediaElementSource(audioEl);
+    analyser = actx.createAnalyser();
+    analyser.fftSize = 128;
+    analyser.smoothingTimeConstant = 0.72;
+    src.connect(analyser);
+    analyser.connect(actx.destination);
+    dataArr = new Uint8Array(analyser.frequencyBinCount);
+    function resume(){ if(actx && actx.state === 'suspended') actx.resume().catch(function(){}); }
+    audioEl.addEventListener('play', resume);
+    document.addEventListener('pointerdown', resume, {once:true, passive:true});
+  }catch(err){ console.warn('spectrum unavailable', err); }
+  (function draw(){
+    requestAnimationFrame(draw);
+    var w = cv.width, h = cv.height;
+    sctx.clearRect(0,0,w,h);
+    if(!analyser || !dataArr || audioEl.paused) return;
+    analyser.getByteFrequencyData(dataArr);
+    var bars = 26, bw = w / bars;
+    for(var i=0;i<bars;i++){
+      var idx = Math.floor(Math.pow(i/bars, 1.4) * dataArr.length * 0.75);
+      var v = dataArr[idx] / 255;
+      var bh = Math.max(2, v * h * 0.92);
+      var x = i*bw + bw*0.22, y = h - bh;
+      sctx.globalAlpha = 0.3 + v*0.65;
+      var grd = sctx.createLinearGradient(0,y,0,h);
+      grd.addColorStop(0, '#f472b6');
+      grd.addColorStop(1, '#8b5cf6');
+      sctx.fillStyle = grd;
+      if(sctx.roundRect){ sctx.beginPath(); sctx.roundRect(x, y, bw*0.56, bh, bw*0.28); sctx.fill(); }
+      else { sctx.fillRect(x, y, bw*0.56, bh); }
+    }
+    sctx.globalAlpha = 1;
+  })();
+})();
+
+/* ---- 3D 倾斜卡 ---- */
+(function(){
+  if(!window.matchMedia || !window.matchMedia('(hover:hover)').matches) return;
+  var cards = document.querySelectorAll('.rcard');
+  cards.forEach(function(card){
+    card.addEventListener('pointermove', function(e){
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left)/r.width - 0.5;
+      var py = (e.clientY - r.top)/r.height - 0.5;
+      card.style.transform = 'perspective(800px) rotateX(' + (-py*10).toFixed(2) + 'deg) rotateY(' + (px*12).toFixed(2) + 'deg) translateY(-4px)';
+    });
+    card.addEventListener('pointerleave', function(){ card.style.transform = ''; });
+  });
+})();
+
+/* ---- 标题逐字浮现 ---- */
+(function(){
+  var h1 = document.querySelector('.cover-info h1');
+  if(!h1 || h1.querySelector('.tf')) return;
+  var txt = h1.textContent.trim();
+  h1.setAttribute('aria-label', txt);
+  h1.innerHTML = Array.prototype.map.call(txt, function(c, i){
+    return '<span class="tf" style="animation-delay:' + (i*45) + 'ms">' + (c === ' ' ? '&nbsp;' : c) + '</span>';
+  }).join('');
+})();
+
+
+/* ---- 主界面歌词（逐字跳动） ---- */
+(function(){
+  var box = document.getElementById('mainLyric');
+  if(!box) return;
+  var lineEl = box.querySelector('.ml-line');
+  var statusEl = box.querySelector('.ml-status');
+  var audioEl = (typeof audio !== 'undefined') ? audio : null;
+  var curIdx = -1;
+  function render(idx){
+    var lyric = (typeof LYRIC !== 'undefined' && idx >= 0) ? LYRIC[idx] : null;
+    if(!lyric){
+      lineEl.innerHTML = '<span class="ph">♪ 点右下角 🎵 播放《失眠》</span>';
+      return;
+    }
+    var txt = lyric[1];
+    var chars = Array.prototype.map.call(txt, function(c, i){
+      return '<span class="ch" style="animation-delay:' + (i*0.07).toFixed(2) + 's">' + (c === ' ' ? '&nbsp;' : c) + '</span>';
+    }).join('');
+    lineEl.innerHTML = chars;
+  }
+  if(audioEl){
+    audioEl.addEventListener('timeupdate', function(){
+      var t = audioEl.currentTime;
+      var idx = -1;
+      for(var i=0;i<LYRIC.length;i++){ if(t >= LYRIC[i][0]) idx = i; else break; }
+      if(idx !== curIdx){ curIdx = idx; if(idx >= 0) render(idx); }
+    });
+    audioEl.addEventListener('play', function(){ box.classList.add('playing'); statusEl.textContent = '♫ 正在播放 · 失眠'; });
+    audioEl.addEventListener('pause', function(){ box.classList.remove('playing'); statusEl.textContent = '♪ 已暂停 · 点右下角 🎵 继续'; });
+    audioEl.addEventListener('ended', function(){ box.classList.remove('playing'); statusEl.textContent = '♪ 播放结束 · 点 🎵 重听'; });
+  }
+  render(-1);
+})();
+
 </script>
 </body>
 </html>
