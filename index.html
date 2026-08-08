@@ -280,23 +280,24 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 @keyframes titleShine{from{background-position:0% 50%}to{background-position:100% 50%}}
 
 
-/* ---- 主界面歌词 ---- */
+/* ---- 主界面歌词（缓慢律动） ---- */
 .main-lyric{padding:20px 22px;margin-bottom:22px;text-align:center;overflow:hidden}
 .main-lyric .ml-status{font-size:12px;color:var(--ink-3);letter-spacing:2px;margin-bottom:10px;transition:color .3s}
 .main-lyric.playing .ml-status{color:var(--brand-deep)}
-.main-lyric .ml-line{min-height:44px;display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap}
-.main-lyric .ml-line .ch{display:inline-block;font-size:clamp(20px,5vw,26px);font-weight:800;
-  background:linear-gradient(120deg,#be185d,#7c3aed 60%,#2563eb);
+.main-lyric .ml-line{min-height:46px;text-align:center;line-height:1.5}
+.main-lyric .ml-line .ch{display:inline-block;font-size:clamp(20px,5vw,26px);font-weight:800;margin:0 1px;
+  background:linear-gradient(120deg,#ec4899,#8b5cf6,#60a5fa,#f472b6,#ec4899);
+  background-size:220% auto;
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  opacity:.85}
-.main-lyric.playing .ml-line .ch{animation:charJump .55s ease-in-out infinite}
+  opacity:.9;will-change:transform,text-shadow}
+.main-lyric.playing .ml-line{animation:lyricFloat 3.6s ease-in-out infinite}
+.main-lyric.playing .ml-line .ch{
+  animation:chSlow 3s ease-in-out infinite,chShine 7s linear infinite,glowPulse 3.6s ease-in-out infinite}
 .main-lyric .ml-line .ph{display:inline-block;font-size:15px;color:var(--ink-3);letter-spacing:2px}
-@keyframes charJump{
-  0%,100%{transform:translateY(0)}
-  30%{transform:translateY(-9px)}
-  55%{transform:translateY(0)}
-  72%{transform:translateY(-4px)}
-}
+@keyframes lyricFloat{0%,100%{transform:translateY(2px)}50%{transform:translateY(-5px)}}
+@keyframes chSlow{0%,100%{transform:translateY(0)}45%{transform:translateY(-5px)}}
+@keyframes chShine{0%{background-position:0% 50%}100%{background-position:220% 50%}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 8px rgba(236,72,153,.35)}50%{text-shadow:0 0 18px rgba(139,92,246,.6)}}
 
 </style>
 </head>
@@ -910,7 +911,7 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     }
     var txt = lyric[1];
     var chars = Array.prototype.map.call(txt, function(c, i){
-      return '<span class="ch" style="animation-delay:' + (i*0.07).toFixed(2) + 's">' + (c === ' ' ? '&nbsp;' : c) + '</span>';
+      return '<span class="ch" style="animation-delay:' + (i*0.13).toFixed(2) + 's">' + (c === ' ' ? '&nbsp;' : c) + '</span>';
     }).join('');
     lineEl.innerHTML = chars;
   }
