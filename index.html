@@ -691,6 +691,18 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
         <button class="pick">选择此款</button>
       </div>
     </div>
+    <div class="maker glass" style="margin-top:14px">
+      <div class="av">🌸</div>
+      <div>
+        <div class="m-name">Sarkura 工作室 <span class="v">认证</span></div>
+        <div class="m-meta">手工定制 · 用心做每一张</div>
+      </div>
+      <button class="m-follow wx-copy">添加微信</button>
+    </div>
+    <div class="cta" style="margin-top:-10px">
+      <a class="btn btn-primary" href="#order">🛒 立即下单</a>
+      <button class="btn btn-ghost wx-copy">💬 添加微信</button>
+    </div>
   </div>
 
   <!-- ===== 下单 ===== -->
@@ -1103,6 +1115,13 @@ document.getElementById('followBtn').addEventListener('click', () => {
 document.getElementById('ctaWx').addEventListener('click', () => {
   showToast('微信号：k638666798k，已复制');
   if(navigator.clipboard) navigator.clipboard.writeText('k638666798k').catch(()=>{});
+});
+/* 内部卡下方 微信按钮（class 绑定） */
+document.querySelectorAll('.wx-copy').forEach(btn => {
+  btn.addEventListener('click', () => {
+    showToast('微信号：k638666798k，已复制');
+    if(navigator.clipboard) navigator.clipboard.writeText('k638666798k').catch(()=>{});
+  });
 });
 
 /* 款式卡片 → 预选 + 滚动 */
