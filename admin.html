@@ -304,7 +304,6 @@ function showAdmin(){ document.getElementById('loginView').style.display='none';
 function showLogin(){ document.getElementById('loginView').style.display='block'; document.getElementById('adminView').style.display='none'; document.getElementById('hd').style.display='none'; }
 
 if(localStorage.getItem('sb_token')) showAdmin(); else showLogin();
-</script>
 
 /* ---- 用户管理 ---- */
 const AVATAR_COLORS = [
@@ -384,5 +383,6 @@ async function showContact(id, name){
 }
 function closeContact(){ document.getElementById('contactMask').style.display = 'none'; }
 
+</script>
 </body>
 </html>
