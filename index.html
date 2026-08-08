@@ -197,7 +197,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 /* ===== 音乐按钮（液态玻璃悬浮） ===== */
-.comment-fab{position:fixed;right:84px;bottom:20px;z-index:120;display:inline-flex;align-items:center;gap:6px;padding:13px 18px;border-radius:999px;background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;font-size:13.5px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(139,92,246,.4);animation:fabPulse 2.8s ease-in-out infinite;transition:transform .2s}
+.comment-fab{position:fixed;right:150px;bottom:20px;z-index:120;display:inline-flex;align-items:center;gap:6px;padding:13px 18px;border-radius:999px;background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;font-size:13.5px;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(139,92,246,.4);animation:fabPulse 2.8s ease-in-out infinite;transition:transform .2s}
 .comment-fab:active{transform:scale(.92)}
 .comment-fab .cf-dot{width:8px;height:8px;border-radius:50%;background:#ffd166;box-shadow:0 0 8px #ffd166;animation:cfBlink 1.6s ease-in-out infinite}
 @keyframes cfBlink{0%,100%{opacity:1}50%{opacity:.35}}
@@ -207,6 +207,13 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 28px rgba(140,100,200,.3), inset 0 1px 0 rgba(255,255,255,.9);
   display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;transition:transform .2s,box-shadow .2s}
 .music-fab:active{transform:scale(.92)}
+.skip-fab{position:fixed;right:84px;bottom:18px;z-index:120;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.4));
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 28px rgba(140,100,200,.3), inset 0 1px 0 rgba(255,255,255,.9);
+  display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform .2s}
+.skip-fab:active{transform:scale(.92)}
+
 .music-fab.playing{animation:fabPulse 2.4s ease-in-out infinite}
 @keyframes fabPulse{0%,100%{box-shadow:0 8px 28px rgba(236,72,153,.35),0 0 0 0 rgba(236,72,153,.35)}50%{box-shadow:0 8px 28px rgba(236,72,153,.45),0 0 0 14px rgba(236,72,153,0)}}
 
@@ -590,6 +597,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 
 <!-- ===== 音乐悬浮按钮 ===== -->
 <button class="music-fab" id="musicFab" aria-label="音乐">🎵</button>
+<button class="skip-fab" id="skipFab" aria-label="切歌">⏭️</button>
 <a class="comment-fab" href="comments.html" aria-label="评论区">💬 <span>评论区</span><span class="cf-dot"></span></a>
 
 <!-- ===== 歌词面板 ===== -->
@@ -702,10 +710,16 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 /* ===== 音乐播放（自动播放 + 首次交互兜底） ===== */
 const LYRIC = [[15.73,"这个失眠夜 想不起你是谁"],[20.65,"品尝过爱情的香甜"],[23.21,"我舍不得喝水"],[29.82,"人总是疯癫 不惜牺牲一切"],[35.23,"却只为了换一次"],[37.27,"拥抱爱的机会"],[42.18,"被你牵着的手是不可能的画面"],[49.23,"拥有你的时间已经不可能倒回"],[55.81,"爱情像纠结的毛线"],[59.66,"你说爱我太过浪费"],[63.33,"太过狼狈 太过愚昧"],[66.91,"都是我一厢情愿"],[70.44,"尝试过爱恋 尝试过缠绵"],[74.41,"最后还是失眠"],[77.42,"脆弱无助的黑夜 都是你抽的烟"],[84.17,"我尝试过亏欠 尝试过敷衍"],[88.6,"最后还是失眠"],[91.67,"忍住怀念 却清醒过 一整夜"],[98.71,"被你牵着的手是不可能的画面"],[105.5,"拥有你的时间已经不可能倒回"],[112.37,"爱情像纠结的毛线"],[116.19,"你说爱我太过浪费"],[119.77,"太过狼狈 太过愚昧"],[123.46,"都是我一厢情愿"],[126.89,"尝试过爱恋 尝试过缠绵"],[130.86,"最后还是失眠"],[133.93,"脆弱无助的黑夜"],[136.16,"都是你抽的烟"],[140.55,"我尝试过亏欠 尝试过敷衍"],[144.98,"最后还是失眠"],[148.02,"忍住怀念 却清醒过 一整夜"],[154.73,"我尝试过爱恋 尝试过缠绵"],[159.06,"最后还是失眠"],[162.28,"眼泪填满的黑夜 是戒不掉的烟"],[168.7,"我尝试过亏欠 尝试过敷衍"],[173.19,"最后还是失眠"],[176.26,"忍住后悔 却忍不住 又想念"],[183.3,"忍住怀念 却清醒过 一整夜"]];
 
-const audio = new Audio('shimian.mp3');
-audio.loop = true;
+const PLAYLIST = [
+  { src: 'shimian.mp3', name: '失眠', artist: 'Suki刘舒妤' },
+  { src: 'xiaoban.mp3', name: '小半', artist: '陈粒' },
+  { src: 'lianren.mp3', name: '恋人', artist: '李荣浩' },
+  { src: 'angel.mp3', name: 'ANGEL', artist: '윤미래' }
+];
+const audio = new Audio();
 audio.preload = 'auto';
 let musicStarted = false;
+let curSong = -1;
 const fab = document.getElementById('musicFab');
 const panel = document.getElementById('lyricPanel');
 const listEl = document.getElementById('lyricList');
@@ -713,6 +727,39 @@ const seekEl = document.getElementById('lyricSeek');
 const timeCur = document.getElementById('timeCur');
 const timeDur = document.getElementById('timeDur');
 let curIdx = -1;
+function randSong(exclude){
+  if(PLAYLIST.length < 2) return 0;
+  var n = Math.floor(Math.random()*PLAYLIST.length);
+  while(n === exclude) n = Math.floor(Math.random()*PLAYLIST.length);
+  return n;
+}
+function applySong(){
+  var s = PLAYLIST[curSong];
+  audio.src = s.src;
+  var p = document.getElementById('lyricPanel');
+  if(p){
+    var songEl = p.querySelector('.song'), artEl = p.querySelector('.artist');
+    if(songEl) songEl.textContent = s.name;
+    if(artEl) artEl.textContent = s.artist;
+  }
+  var ml = document.getElementById('mainLyric');
+  if(ml){
+    var st = ml.querySelector('.ml-status');
+    if(st) st.textContent = '♪ 正在播放：《' + s.name + '》';
+  }
+  var lst = document.getElementById('lyricList');
+  if(lst) lst.style.display = (curSong === 0) ? '' : 'none';
+  curIdx = -1;
+}
+function playSong(i, autoplay){
+  curSong = i;
+  applySong();
+  if(autoplay){
+    audio.play().then(function(){ fab.classList.add('playing'); fab.textContent = '🎶'; })
+      .catch(function(){});
+  }
+}
+function nextSong(autoplay){ playSong(randSong(curSong), autoplay !== false); }
 
 /* 渲染歌词 */
 LYRIC.forEach(l => {
@@ -728,6 +775,8 @@ function fmt(s){ s = Math.max(0, Math.floor(s)); return Math.floor(s/60) + ':' +
 function tryPlay(){
   if(musicStarted) return;
   musicStarted = true;
+  if(curSong < 0) curSong = randSong(-1);
+  applySong();
   audio.play().then(() => { fab.classList.add('playing'); fab.textContent = '🎶'; })
     .catch(() => { musicStarted = false; });
 }
@@ -745,6 +794,10 @@ fab.addEventListener('click', () => {
   panel.classList.toggle('open');
 });
 document.getElementById('lyricClose').addEventListener('click', () => panel.classList.remove('open'));
+document.getElementById('skipFab').addEventListener('click', () => {
+  nextSong(true);
+  showToast('切歌 → ' + PLAYLIST[curSong].name);
+});
 
 /* 歌词滚动 + 进度 */
 audio.addEventListener('timeupdate', () => {
@@ -773,7 +826,7 @@ seekEl.addEventListener('input', () => {
   const dur = audio.duration || 0;
   if(dur) audio.currentTime = seekEl.value/100*dur;
 });
-audio.addEventListener('ended', () => { fab.classList.remove('playing'); fab.textContent='🎵'; });
+audio.addEventListener('ended', () => { nextSong(true); });
 audio.addEventListener('pause', () => { fab.classList.remove('playing'); fab.textContent='🎵'; });
 audio.addEventListener('play', () => { fab.classList.add('playing'); fab.textContent='🎶'; });
 
