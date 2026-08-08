@@ -383,6 +383,25 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .cm-wrap{max-width:760px;margin:0 auto;padding:18px 16px 60px}
 .cm-wrap .comments{background:rgba(255,255,255,.75);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,.9);padding:22px;box-shadow:0 8px 32px rgba(80,60,120,.08)}
 .cm-hero-rule{width:56px;height:3px;border-radius:99px;margin:14px auto 0;background:linear-gradient(90deg,#ec4899,#8b5cf6)}
+/* 抖音式回复弹层 */
+.cm-actions{margin-top:6px}
+.cm-reply-btn{background:none;border:none;color:#8b5cf6;font-size:12px;cursor:pointer;padding:2px 8px 2px 0;font-family:inherit}
+.cm-reply-btn:hover{color:#ec4899}
+.reply-mask{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .25s}
+.reply-mask.show{opacity:1}
+.reply-panel{width:100%;max-width:560px;max-height:75vh;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px 20px 0 0;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .28s cubic-bezier(.2,.9,.3,1);box-shadow:0 -10px 40px rgba(0,0,0,.15)}
+.reply-mask.show .reply-panel{transform:translateY(0)}
+.reply-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(15,23,42,.06)}
+.reply-title{font-size:15px;font-weight:700;color:#0f172a}
+.reply-close{margin-left:auto;width:28px;height:28px;border-radius:50%;background:rgba(15,23,42,.06);border:none;color:#64748b;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.reply-target{padding:12px 18px;border-bottom:1px solid rgba(15,23,42,.06);display:flex;gap:10px;align-items:flex-start}
+.reply-list{flex:1;overflow-y:auto;padding:10px 18px;min-height:80px;-webkit-overflow-scrolling:touch}
+.cm-rep{margin-left:18px;background:rgba(236,72,153,.05);border-color:rgba(236,72,153,.12)}
+.reply-input-bar{display:flex;gap:10px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(15,23,42,.06);background:rgba(255,255,255,.7)}
+.reply-input-bar input{flex:1;border:1px solid rgba(15,23,42,.1);background:#fff;border-radius:20px;padding:9px 16px;font-size:14px;font-family:inherit;color:#0f172a;outline:none;min-width:0}
+.reply-input-bar input:focus{border-color:rgba(236,72,153,.5);box-shadow:0 0 0 3px rgba(236,72,153,.12)}
+.reply-input-bar .cm-btn{flex:none;padding:9px 20px;border-radius:20px}
+
 </style>
 </head>
 <body>
@@ -420,6 +439,22 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
         <textarea id="cmText" maxlength="500" rows="3" placeholder="登录后留言，昵称自动显示～"></textarea>
         <button class="cm-btn" id="cmBtn">发布留言</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 回复弹层（抖音式） -->
+<div class="reply-mask" id="replyMask" style="display:none">
+  <div class="reply-panel">
+    <div class="reply-head">
+      <span class="reply-title">💬 回复</span>
+      <button class="reply-close" id="replyClose">✕</button>
+    </div>
+    <div class="reply-target" id="replyTarget"></div>
+    <div class="reply-list" id="replyList"></div>
+    <div class="reply-input-bar">
+      <input id="replyInput" maxlength="500" placeholder="回复：">
+      <button id="replySend" class="cm-btn">发送</button>
     </div>
   </div>
 </div>
@@ -556,7 +591,7 @@ function showToast(msg){
 
 
 
-/* ---- 评论区（强制登录） ---- */
+/* ---- 评论区（抖音式：卡片 + 回复弹层） ---- */
 (function(){
   var list = document.getElementById('cmList');
   if(!list) return;
@@ -576,14 +611,29 @@ function showToast(msg){
     if(diff < 604800) return Math.floor(diff/86400) + ' 天前';
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   }
+  function avatarBg(n){ var h=0,s=String(n||'匿'); for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return ['linear-gradient(135deg,#ec4899,#8b5cf6)','linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#06b6d4,#3b82f6)','linear-gradient(135deg,#10b981,#059669)','linear-gradient(135deg,#f43f5e,#ec4899)','linear-gradient(135deg,#8b5cf6,#6366f1)'][h%6]; }
+  function avatar(n){ return '<div class="cm-av" style="background:' + avatarBg(n) + '">' + esc((n||'匿').slice(0,1)) + '</div>'; }
+  var COMMENTS = [];
   function render(cs){
-    if(!cs.length){ list.innerHTML = '<div class="cm-empty">还没有留言，登录后抢沙发 🌸</div>'; return; }
-    list.innerHTML = cs.map(function(c){
-      return '<div class="cm-item"><div class="cm-av">' + esc((c.nickname||'匿').slice(0,1)) + '</div><div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div></div>';
+    COMMENTS = cs || [];
+    if(!COMMENTS.length){ list.innerHTML = '<div class="cm-empty">还没有留言，登录后抢沙发 🌸</div>'; return; }
+    list.innerHTML = COMMENTS.map(function(c){
+      var rep = c.replies || [];
+      return '<div class="cm-item">' +
+        avatar(c.nickname) +
+        '<div class="cm-body">' +
+          '<div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
+          '<div class="cm-text">' + esc(c.content) + '</div>' +
+          '<div class="cm-actions"><button class="cm-reply-btn" data-id="' + c.id + '" data-name="' + esc(c.nickname||'匿名') + '">💬 回复' + (rep.length ? ' (' + rep.length + ')' : '') + '</button></div>' +
+        '</div>' +
+      '</div>';
     }).join('');
+    list.querySelectorAll('.cm-reply-btn').forEach(function(b){
+      b.addEventListener('click', function(){ openReply(Number(b.getAttribute('data-id')), b.getAttribute('data-name')); });
+    });
   }
   function load(){
-    fetch(CURL + '/rest/v1/comments?select=*&order=created_at.desc&limit=50', { headers: { 'apikey': CKEY } })
+    fetch(CURL + '/rest/v1/rpc/get_comments', { method: 'POST', headers: { 'apikey': CKEY, 'Content-Type': 'application/json' }, body: '{}' })
       .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(render)
       .catch(function(){ list.innerHTML = '<div class="cm-empty">评论区暂时无法加载 🌸</div>'; });
@@ -615,9 +665,58 @@ function showToast(msg){
       .catch(function(){ showToast('发布失败，请稍后再试'); })
       .finally(function(){ btn.disabled = false; btn.textContent = '发布留言'; });
   });
+  /* 抖音式回复弹层 */
+  var mask = document.getElementById('replyMask');
+  var replyTarget = document.getElementById('replyTarget');
+  var replyList = document.getElementById('replyList');
+  var replyInput = document.getElementById('replyInput');
+  var replySend = document.getElementById('replySend');
+  var repTo = null;
+  function openReply(id, name){
+    var c = null;
+    COMMENTS.forEach(function(x){ if(x.id === id) c = x; });
+    if(!c) return;
+    repTo = { id: id, name: name };
+    document.getElementById('replyClose').onclick = closeReply;
+    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div>';
+    var reps = c.replies || [];
+    replyList.innerHTML = reps.length ? reps.map(function(r){
+      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(r.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div></div></div>';
+    }).join('') : '<div class="cm-empty">还没有回复，快来抢沙发 🌸</div>';
+    replyInput.placeholder = '回复 @' + name + '：';
+    mask.style.display = 'flex';
+    setTimeout(function(){ mask.classList.add('show'); }, 10);
+    setTimeout(function(){ replyInput.focus(); }, 180);
+  }
+  function closeReply(){
+    mask.classList.remove('show');
+    setTimeout(function(){ mask.style.display = 'none'; }, 260);
+  }
+  mask.addEventListener('click', function(e){ if(e.target === mask) closeReply(); });
+  replySend.addEventListener('click', function(){
+    var u = auth();
+    if(!u){ closeReply(); showToast('请先登录'); if(window.openAuth) window.openAuth(); return; }
+    var content = replyInput.value.trim();
+    if(!content){ showToast('写点什么再回复吧'); return; }
+    if(content.length > 500){ showToast('内容太长啦（最多500字）'); return; }
+    replySend.disabled = true; replySend.textContent = '发送中…';
+    fetch(CURL + '/rest/v1/rpc/insert_comment', {
+      method: 'POST',
+      headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_token: u.token, p_content: content, p_parent_id: repTo.id })
+    }).then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d && d.ok){ replyInput.value = ''; closeReply(); showToast('回复成功 🎉'); load(); }
+        else if(d && d.code === 'noauth'){ localStorage.removeItem('sk_user'); refresh(); showToast('登录已失效，请重新登录'); if(window.openAuth) window.openAuth(); }
+        else { showToast((d && d.msg) || '回复失败，请稍后再试'); }
+      })
+      .catch(function(){ showToast('回复失败，请稍后再试'); })
+      .finally(function(){ replySend.disabled = false; replySend.textContent = '发送'; });
+  });
   window.addEventListener('sk_user_changed', refresh);
   refresh();
 })();
+
 
 /* ---- 用户注册/登录（用户名+联系方式，评论强制登录） ---- */
 (function(){
