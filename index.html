@@ -299,9 +299,49 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 @keyframes chShine{0%{background-position:0% 50%}100%{background-position:220% 50%}}
 @keyframes glowPulse{0%,100%{text-shadow:0 0 8px rgba(236,72,153,.35)}50%{text-shadow:0 0 18px rgba(139,92,246,.6)}}
 
+
+/* ---- 进入动画 ---- */
+#splash{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:linear-gradient(165deg,#fdf2f8 0%,#f3e8ff 48%,#e0e7ff 100%);
+  overflow:hidden;
+  transition:transform .85s cubic-bezier(.72,0,.28,1),opacity .85s ease;
+  will-change:transform,opacity}
+#splash.hide{transform:translateY(-102%);opacity:0;pointer-events:none}
+#splash .sp-logo{font-size:58px;animation:spPop 1s cubic-bezier(.2,.9,.3,1.4) both;filter:drop-shadow(0 8px 20px rgba(236,72,153,.35))}
+#splash .sp-name{font-size:21px;font-weight:800;letter-spacing:5px;
+  background:linear-gradient(120deg,#be185d,#7c3aed 70%,#2563eb);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  opacity:0;animation:spFade .8s .3s both}
+#splash .sp-sub{font-size:12px;color:var(--ink-3);letter-spacing:3px;opacity:0;animation:spFade .8s .55s both}
+#splash .sp-bar{width:150px;height:3px;border-radius:99px;background:rgba(236,72,153,.15);overflow:hidden;opacity:0;animation:spFade .4s .75s both}
+#splash .sp-bar i{display:block;height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,#ec4899,#8b5cf6,#60a5fa);
+  animation:spFill 1.05s .8s cubic-bezier(.4,0,.2,1) both}
+#splash .sp-petal{position:absolute;top:-20px;width:15px;height:13px;border-radius:70% 0 70% 0;
+  background:linear-gradient(135deg,#ffc4dd,#ff8fb8);opacity:.75;
+  animation:spPetal 4.5s linear infinite}
+@keyframes spPop{0%{transform:scale(.2) rotate(-40deg);opacity:0}55%{transform:scale(1.18) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes spFade{to{opacity:1}}
+@keyframes spFill{to{width:100%}}
+@keyframes spPetal{0%{transform:translateY(-24px) rotate(0);opacity:0}12%{opacity:.75}100%{transform:translateY(105vh) rotate(340deg);opacity:.1}}
+
 </style>
 </head>
 <body>
+
+<!-- ===== 进入动画遮罩 ===== -->
+<div id="splash">
+  <div class="sp-petal" style="left:12%;animation-delay:0s"></div>
+  <div class="sp-petal" style="left:28%;animation-delay:1.2s"></div>
+  <div class="sp-petal" style="left:58%;animation-delay:.6s"></div>
+  <div class="sp-petal" style="left:74%;animation-delay:1.8s"></div>
+  <div class="sp-petal" style="left:88%;animation-delay:.3s"></div>
+  <div class="sp-logo">🌸</div>
+  <div class="sp-name">Sarkura 工作室</div>
+  <div class="sp-sub">CUSTOM CARD · 定制你的专属</div>
+  <div class="sp-bar"><i></i></div>
+</div>
+
 
 <!-- 樱花飘落 canvas -->
 <canvas id="sakura"></canvas>
@@ -927,6 +967,22 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     audioEl.addEventListener('ended', function(){ box.classList.remove('playing'); statusEl.textContent = '♪ 播放结束 · 点 🎵 重听'; });
   }
   render(-1);
+})();
+
+
+/* ---- 进入动画 ---- */
+(function(){
+  var sp = document.getElementById('splash');
+  if(!sp) return;
+  var done = false;
+  function hide(){
+    if(done) return;
+    done = true;
+    sp.classList.add('hide');
+    setTimeout(function(){ if(sp.parentNode) sp.parentNode.removeChild(sp); }, 950);
+  }
+  setTimeout(hide, 2250);
+  window.addEventListener('load', function(){ setTimeout(hide, 600); });
 })();
 
 </script>
