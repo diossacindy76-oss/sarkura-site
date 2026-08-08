@@ -42,6 +42,18 @@ body{background:#f1f5f9;min-height:100vh}
 .rev .total{font-size:26px;font-weight:800;color:#fbbf24;margin-top:2px}
 .rev .sub{font-size:12px;color:#94a3b8;text-align:right;line-height:1.7}
 .rev .sub b{color:#fff}
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:#fff;border-radius:12px;padding:6px;border:1px solid #e2e8f0}
+.tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:8px;font-size:14px;font-weight:600;color:#64748b;cursor:pointer;transition:.2s}
+.tab.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
+.tab .bdg{display:inline-block;min-width:18px;height:18px;line-height:18px;border-radius:999px;background:rgba(255,255,255,.25);font-size:11px;margin-left:4px}
+.tab:not(.active) .bdg{background:#fef3c7;color:#b45309}
+.cmt-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px}
+.cmt-card .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cmt-card .name{font-weight:700;color:#0f172a;font-size:14px}
+.cmt-card .name::before{content:'💬 '}
+.cmt-card .time{font-size:12px;color:#94a3b8}
+.cmt-card .txt{font-size:14px;color:#334155;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+
 </style>
 </head>
 <body>
@@ -61,6 +73,11 @@ body{background:#f1f5f9;min-height:100vh}
 
 <!-- 订单列表 -->
 <div class="wrap" id="adminView" style="display:none">
+  <div class="tabs">
+    <button class="tab active" id="tabOrders" onclick="switchTab('orders')">📋 订单</button>
+    <button class="tab" id="tabComments" onclick="switchTab('comments')">💬 评论<span class="bdg" id="cmtBadge">0</span></button>
+  </div>
+  <div id="ordersPane">
   <div class="rev">
     <div><div class="l">💰 总营收</div><div class="total" id="revTotal">¥0</div></div>
     <div class="sub">已完成 <b id="revDone">¥0</b><br>共 <b id="revCount">0</b> 单</div>
@@ -72,6 +89,15 @@ body{background:#f1f5f9;min-height:100vh}
   </div>
   <div id="list"></div>
   <div class="empty" id="empty" style="display:none">暂无订单，客户提交后会显示在这里</div>
+  </div>
+  <div id="commentsPane" style="display:none">
+    <div class="stat">
+      <div><div class="n" id="cmtTotal">0</div><div class="l">总评论</div></div>
+      <div><div class="n" id="cmtToday">0</div><div class="l">今日新增</div></div>
+    </div>
+    <div id="cmtList"></div>
+    <div class="empty" id="cmtEmpty" style="display:none">暂无评论，访客留言后会显示在这里</div>
+  </div>
 </div>
 
 <script>
@@ -181,8 +207,69 @@ async function delOrder(id){
   }
 }
 
+
+function switchTab(t){
+  document.getElementById('tabOrders').className = 'tab' + (t==='orders'?' active':'');
+  document.getElementById('tabComments').className = 'tab' + (t==='comments'?' active':'');
+  document.getElementById('ordersPane').style.display = t==='orders'?'block':'none';
+  document.getElementById('commentsPane').style.display = t==='comments'?'block':'none';
+  if(t==='comments') loadComments();
+}
+
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function loadComments(){
+  const token = localStorage.getItem('sb_token');
+  if(!token){ showLogin(); return; }
+  const r = await fetch(SUPABASE_URL + '/rest/v1/comments?select=*&order=created_at.desc&limit=200', {
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token}
+  });
+  if(r.status === 401){ localStorage.removeItem('sb_token'); showLogin(); return; }
+  const cs = await r.json();
+  document.getElementById('cmtBadge').textContent = cs.length;
+  renderComments(cs);
+}
+
+function renderComments(cs){
+  document.getElementById('cmtTotal').textContent = cs.length;
+  const today = new Date(); today.setHours(0,0,0,0);
+  document.getElementById('cmtToday').textContent = cs.filter(c=>new Date(c.created_at)>=today).length;
+  const list = document.getElementById('cmtList');
+  list.innerHTML = '';
+  document.getElementById('cmtEmpty').style.display = cs.length?'none':'block';
+  cs.forEach(c=>{
+    const t = new Date(c.created_at);
+    const time = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')+' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    const div = document.createElement('div');
+    div.className = 'cmt-card';
+    div.innerHTML = `
+      <div class="head">
+        <span class="name">${esc(c.nickname||'匿名')}</span>
+        <span class="time">${time}</span>
+      </div>
+      <div class="txt">${esc(c.content)}</div>
+      <div class="btns">
+        <button class="del" onclick="delComment(${c.id})">🗑 删除</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+async function delComment(id){
+  if(!confirm('确定删除这条评论吗？删除后不可恢复！')) return;
+  const token = localStorage.getItem('sb_token');
+  const r = await fetch(SUPABASE_URL + '/rest/v1/comments?id=eq.' + id, {
+    method: 'DELETE',
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Prefer': 'return=minimal'}
+  });
+  if(r.ok) loadComments();
+  else alert('删除失败（' + r.status + '），请刷新重试');
+}
+
 function logout(){ localStorage.removeItem('sb_token'); showLogin(); }
-function showAdmin(){ document.getElementById('loginView').style.display='none'; document.getElementById('adminView').style.display='block'; document.getElementById('hd').style.display='flex'; loadOrders(); }
+function showAdmin(){ document.getElementById('loginView').style.display='none'; document.getElementById('adminView').style.display='block'; document.getElementById('hd').style.display='flex'; loadOrders(); loadComments(); }
 function showLogin(){ document.getElementById('loginView').style.display='block'; document.getElementById('adminView').style.display='none'; document.getElementById('hd').style.display='none'; }
 
 if(localStorage.getItem('sb_token')) showAdmin(); else showLogin();
