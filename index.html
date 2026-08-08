@@ -1028,6 +1028,22 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     }
   }
 
+  /* 内部卡：本月限量 1 张，已售完则拦截 */
+  if(/内部卡/.test(svc.value)){
+    try{
+      const icR = await fetch(SUPABASE_URL + '/rest/v1/comments?select=id&nickname=eq.' + encodeURIComponent('内部卡售罄') + '&limit=1', {
+        headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY}
+      });
+      if(icR.ok){
+        const icArr = await icR.json();
+        if(icArr && icArr.length){
+          showToast('内部卡本月已售完，下个月再来吧');
+          return;
+        }
+      }
+    }catch(e){}
+  }
+
   const btn = this.querySelector('.submit-btn');
   btn.disabled = true; btn.textContent = '提交中…';
   try{
