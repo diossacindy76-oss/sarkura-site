@@ -87,6 +87,7 @@ body{background:#f1f5f9;min-height:100vh}
     <button class="tab active" id="tabOrders" onclick="switchTab('orders')">📋 订单</button>
     <button class="tab" id="tabComments" onclick="switchTab('comments')">💬 评论<span class="bdg" id="cmtBadge">0</span></button>
     <button class="tab" id="tabUsers" onclick="switchTab('users')">👥 用户<span class="bdg" id="usrBadge">0</span></button>
+    <button class="tab" id="tabDraw" onclick="switchTab('draw')">🎁 抽奖<span class="bdg" id="drawBadge">0</span></button>
   </div>
   <div id="ordersPane">
   <div class="rev">
@@ -127,6 +128,17 @@ body{background:#f1f5f9;min-height:100vh}
     </div>
     <div id="usrList"></div>
     <div class="empty" id="usrEmpty" style="display:none">暂无注册用户</div>
+  </div>
+  <div id="drawPane" style="display:none">
+    <div class="stat">
+      <div><div class="n" id="drawTotal">0</div><div class="l">本月报名</div></div>
+      <div><div class="n" id="drawWinCount">0</div><div class="l">已开奖月份</div></div>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:#0f172a;margin:14px 0 8px">📥 本月报名者（由你定夺中奖者）</div>
+    <div id="drawList"></div>
+    <div class="empty" id="drawEmpty" style="display:none">本月还没有人报名</div>
+    <div style="font-size:13px;font-weight:700;color:#0f172a;margin:18px 0 8px">🏆 中奖公示（每月保留，前端同步展示）</div>
+    <div id="drawWinList"></div>
   </div>
 </div>
 
@@ -309,6 +321,9 @@ function switchTab(t){
   if(t==='comments') loadComments();
   document.getElementById('usersPane').style.display = t==='users'?'block':'none';
   if(t==='users') loadUsers();
+  document.getElementById('tabDraw').className = 'tab' + (t==='draw'?' active':'');
+  document.getElementById('drawPane').style.display = t==='draw'?'block':'none';
+  if(t==='draw') loadDraw();
 }
 
 function esc(s){
@@ -447,6 +462,61 @@ async function showContact(id, name){
 }
 function closeContact(){ document.getElementById('contactMask').style.display = 'none'; }
 
+
+/* ===== 抽奖管理（报名者 + 定夺中奖 + 公示） ===== */
+async function loadDraw(){
+  const token = localStorage.getItem('sb_token');
+  if(!token){ showLogin(); return; }
+  const h = {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token};
+  const d = new Date();
+  const m = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  const r1 = await fetch(SUPABASE_URL + '/rest/v1/draw_entries?select=*&month=eq.' + m + '&order=created_at.desc', {headers: h});
+  if(r1.status === 401){ localStorage.removeItem('sb_token'); showLogin(); return; }
+  const es = await r1.json();
+  document.getElementById('drawTotal').textContent = es.length;
+  document.getElementById('drawBadge').textContent = es.length;
+  document.getElementById('drawBadge').style.display = es.length ? 'inline-block' : 'none';
+  const list = document.getElementById('drawList');
+  if(!es.length){ document.getElementById('drawEmpty').style.display='block'; list.innerHTML=''; }
+  else{
+    document.getElementById('drawEmpty').style.display='none';
+    list.innerHTML = es.map(e =>
+      '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:13px">' +
+      '<div style="font-weight:700;color:#0f172a">' + esc(e.name) + ' <span style="color:#94a3b8;font-weight:400">微信 ' + esc(e.wechat) + '</span></div>' +
+      '<div style="color:#94a3b8;font-size:12px;margin:4px 0 8px">' + String(e.created_at||'').replace('T',' ').slice(0,16) + ' 报名</div>' +
+      '<button onclick="winDraw(' + e.id + ',\'' + esc(e.name) + '\',\'' + esc(e.wechat) + '\',\'' + m + '\')" style="background:linear-gradient(120deg,#f59e0b,#d97706);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🏆 设为本月中奖者</button>' +
+      '</div>').join('');
+  }
+  const r2 = await fetch(SUPABASE_URL + '/rest/v1/draw_winners?select=*&order=month.desc', {headers: h});
+  const ws = await r2.json();
+  document.getElementById('drawWinCount').textContent = ws.length;
+  const wl = document.getElementById('drawWinList');
+  if(!ws.length){ wl.innerHTML = '<div class="empty">还没有开过奖</div>'; }
+  else{
+    wl.innerHTML = ws.map(w =>
+      '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:13px">' +
+      '<div style="font-weight:700;color:#0f172a">' + esc(w.month) + ' <span style="color:#f59e0b">🎉 ' + esc(w.name) + '</span> <span style="color:#94a3b8;font-weight:400">微信 ' + esc(w.wechat) + '</span></div>' +
+      '<div style="color:#94a3b8;font-size:12px;margin:4px 0 0">' + String(w.created_at||'').replace('T',' ').slice(0,16) + '</div>' +
+      '<button onclick="delWin(' + w.id + ')" style="margin-top:8px;background:#fee2e2;color:#dc2626;border:none;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer">删除</button>' +
+      '</div>').join('');
+  }
+}
+async function winDraw(id, name, wechat, month){
+  if(!confirm('确认 ' + name + ' 为本月（' + month + '）中奖用户？将同步公示到前端')) return;
+  const token = localStorage.getItem('sb_token');
+  const r = await fetch(SUPABASE_URL + '/rest/v1/draw_winners', {method:'POST',
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type':'application/json', 'Prefer':'return=minimal'},
+    body: JSON.stringify({month: month, name: name, wechat: wechat, note: '每月抽奖'})});
+  if(r.ok){ alert('✅ 已设为中奖，前端公示已更新'); loadDraw(); }
+  else { alert('设置失败：本月可能已开过奖（每月限 1 名）。如要换人请先删除原公示'); }
+}
+async function delWin(id){
+  if(!confirm('删除这条中奖公示？（前端公示将同步消失）')) return;
+  const token = localStorage.getItem('sb_token');
+  const r = await fetch(SUPABASE_URL + '/rest/v1/draw_winners?id=eq.' + id, {method:'DELETE',
+    headers: {'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Prefer':'return=minimal'}});
+  if(r.ok) loadDraw();
+}
 </script>
 </body>
 </html>
