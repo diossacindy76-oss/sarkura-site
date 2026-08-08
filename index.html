@@ -325,6 +325,27 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 @keyframes spFill{to{width:100%}}
 @keyframes spPetal{0%{transform:translateY(-24px) rotate(0);opacity:0}12%{opacity:.75}100%{transform:translateY(105vh) rotate(340deg);opacity:.1}}
 
+
+/* ---- 评论区 ---- */
+.comments{padding:22px;margin-bottom:64px}
+.cm-list{display:flex;flex-direction:column;gap:12px;margin-bottom:18px;min-height:40px}
+.cm-empty{color:var(--ink-3);font-size:13px;text-align:center;padding:18px 0}
+.cm-item{display:flex;gap:10px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.7)}
+.cm-av{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:14px;background:linear-gradient(135deg,#ec4899,#8b5cf6)}
+.cm-body{min-width:0;flex:1}
+.cm-meta{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.cm-name{font-size:13px;font-weight:700;color:var(--ink)}
+.cm-time{font-size:11px;color:var(--ink-3)}
+.cm-text{font-size:13.5px;color:var(--ink-2);line-height:1.6;word-break:break-word;white-space:pre-wrap}
+.cm-form{display:flex;flex-direction:column;gap:10px}
+.cm-inputs{display:flex;flex-direction:column;gap:8px}
+.cm-form input,.cm-form textarea{border:1px solid rgba(255,255,255,.85);background:rgba(255,255,255,.65);border-radius:12px;padding:10px 12px;font-size:13.5px;font-family:inherit;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;resize:none}
+.cm-form input:focus,.cm-form textarea:focus{border-color:rgba(236,72,153,.5);box-shadow:0 0 0 3px rgba(236,72,153,.12)}
+.cm-form input::placeholder,.cm-form textarea::placeholder{color:var(--ink-3)}
+.cm-btn{align-self:flex-end;background:linear-gradient(120deg,var(--brand),var(--violet));color:#fff;border:none;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.cm-btn:active{transform:scale(.96)}
+.cm-btn:disabled{opacity:.6;cursor:not-allowed}
+
 </style>
 </head>
 <body>
@@ -527,6 +548,21 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
       <summary>「用不了包退包换」是什么意思？</summary>
       <div class="ans">收到货如果发现用不了、不适用，或与沟通不符，支持退换，放心下单。</div>
     </details>
+  </div>
+  <!-- ===== 评论区 ===== -->
+  <div class="sec-head">
+    <div class="en">COMMENTS</div>
+    <h2>访客留言</h2>
+  </div>
+  <div class="comments glass" id="comments">
+    <div class="cm-list" id="cmList"><div class="cm-empty">加载中…</div></div>
+    <div class="cm-form">
+      <div class="cm-inputs">
+        <input type="text" id="cmName" maxlength="20" placeholder="你的昵称（选填）">
+        <textarea id="cmText" maxlength="500" rows="3" placeholder="定制咨询、意见反馈都可以，说点什么吧～"></textarea>
+      </div>
+      <button class="cm-btn" id="cmBtn">发布留言</button>
+    </div>
   </div>
 </div>
 
@@ -825,7 +861,7 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
 /* ---- 滚动渐显 ---- */
 (function(){
   if(!('IntersectionObserver' in window)) return;
-  var els = document.querySelectorAll('.specs,.maker,.cta,.tags,#reco,.reco,.rcard,.order-box,#order,.faq,#faq,.sec-head');
+  var els = document.querySelectorAll('.specs,.maker,.cta,.tags,#reco,.reco,.rcard,.order-box,#order,.faq,#faq,.sec-head,.comments');
   var seen = new Set();
   els.forEach(function(el){ if(!seen.has(el)){ seen.add(el); el.classList.add('reveal'); } });
   var rcards = document.querySelectorAll('.rcard');
@@ -992,6 +1028,63 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     window.scrollTo(0, 0);
     setTimeout(hide, 600);
   });
+})();
+
+
+/* ---- 评论区 ---- */
+(function(){
+  var list = document.getElementById('cmList');
+  if(!list) return;
+  var nameEl = document.getElementById('cmName');
+  var textEl = document.getElementById('cmText');
+  var btn = document.getElementById('cmBtn');
+  var CURL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
+  var CKEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function timeAgo(ts){
+    var d = new Date(ts), diff = (Date.now() - d.getTime())/1000;
+    if(diff < 60) return '刚刚';
+    if(diff < 3600) return Math.floor(diff/60) + ' 分钟前';
+    if(diff < 86400) return Math.floor(diff/3600) + ' 小时前';
+    if(diff < 604800) return Math.floor(diff/86400) + ' 天前';
+    return (d.getMonth()+1) + '-' + d.getDate();
+  }
+  function render(items){
+    if(!items || !items.length){ list.innerHTML = '<div class="cm-empty">还没有留言，来抢沙发～🌸</div>'; return; }
+    list.innerHTML = items.map(function(c){
+      var av = (c.nickname || '匿').trim().charAt(0);
+      return '<div class="cm-item"><div class="cm-av">' + esc(av) + '</div><div class="cm-body">' +
+        '<div class="cm-meta"><span class="cm-name">' + esc(c.nickname || '匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
+        '<div class="cm-text">' + esc(c.content) + '</div></div></div>';
+    }).join('');
+  }
+  function load(){
+    fetch(CURL + '/rest/v1/comments?select=*&order=created_at.desc&limit=50', { headers: { 'apikey': CKEY } })
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(render)
+      .catch(function(){ list.innerHTML = '<div class="cm-empty">评论区即将开放，敬请期待 🌸</div>'; });
+  }
+  btn.addEventListener('click', function(){
+    var name = nameEl.value.trim().slice(0,20);
+    var content = textEl.value.trim();
+    if(!content){ showToast('写点什么再发布吧'); return; }
+    if(content.length > 500){ showToast('内容太长啦（最多500字）'); return; }
+    btn.disabled = true; btn.textContent = '发布中…';
+    fetch(CURL + '/rest/v1/comments', {
+      method: 'POST',
+      headers: { 'apikey': CKEY, 'Authorization': 'Bearer ' + CKEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+      body: JSON.stringify({ nickname: name || '匿名', content: content })
+    }).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(){
+      textEl.value = '';
+      showToast('留言已发布 🎉');
+      load();
+    }).catch(function(){ showToast('发布失败，请稍后再试'); })
+      .finally(function(){ btn.disabled = false; btn.textContent = '发布留言'; });
+  });
+  load();
 })();
 
 </script>
