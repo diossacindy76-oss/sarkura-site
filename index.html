@@ -737,7 +737,7 @@ function randSong(exclude){
   return n;
 }
 function applySong(){
-  var s = PLAYLIST[curSong];
+  var s = PLAYLIST[curSong] || PLAYLIST[0];
   audio.src = s.src;
   var p = document.getElementById('lyricPanel');
   if(p){
@@ -768,7 +768,8 @@ function nextSong(autoplay){ playSong(randSong(curSong), autoplay !== false); }
 /* 渲染歌词（按当前歌曲） */
 function renderLyricList(){
   listEl.innerHTML = '';
-  const lyr = LYRICS[PLAYLIST[curSong].src] || [];
+  const _s = PLAYLIST[curSong] || PLAYLIST[0] || {};
+  const lyr = LYRICS[_s.src] || [];
   lyr.forEach(l => {
     const d = document.createElement('div');
     d.className = 'lyric-line';
@@ -815,7 +816,8 @@ document.getElementById('skipFab').addEventListener('click', () => {
 /* 歌词滚动 + 进度 */
 audio.addEventListener('timeupdate', () => {
   const t = audio.currentTime;
-  const lyr = LYRICS[PLAYLIST[curSong].src] || [];
+  const _s = PLAYLIST[curSong] || PLAYLIST[0] || {};
+  const lyr = LYRICS[_s.src] || [];
   let idx = -1;
   for(let i=0;i<lyr.length;i++){ if(t >= lyr[i][0]) idx = i; else break; }
   if(idx !== curIdx){
