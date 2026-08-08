@@ -415,6 +415,11 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .reply-input-bar input:focus{border-color:rgba(236,72,153,.5);box-shadow:0 0 0 3px rgba(236,72,153,.12)}
 .reply-input-bar .cm-btn{flex:none;padding:9px 20px;border-radius:20px}
 
+
+.cm-zoom{position:fixed;inset:0;background:rgba(10,8,16,.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .22s}
+.cm-zoom.show{opacity:1;pointer-events:auto}
+.cm-zoom img{max-width:100%;max-height:92vh;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.cm-zoom .cm-zoom-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:18px;border:none;cursor:pointer}
 </style>
 </head>
 <body>
@@ -451,7 +456,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
         <div class="cm-user" id="cmUser"></div>
         <textarea id="cmText" maxlength="500" rows="3" placeholder="登录后留言，昵称自动显示～"></textarea>
         <div class="cm-img-row">
-          <label class="cm-img-pick">📷 添加图片<input type="file" id="cmImg" accept="image/jpeg,image/png,image/webp,image/gif"></label>
+          <label class="cm-img-pick">📷 添加图片<input type="file" id="cmImg" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"></label>
           <div class="cm-img-prev" id="cmImgPrev" style="display:none"><img id="cmImgPrevImg" alt=""><button class="cm-img-del" id="cmImgDel">✕</button></div>
         </div>
         <button class="cm-btn" id="cmBtn">发布留言</button>
@@ -471,7 +476,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
     <div class="reply-list" id="replyList"></div>
     <div class="reply-input-bar">
       <input id="replyInput" maxlength="500" placeholder="回复：">
-      <label class="reply-img-btn" title="添加图片">📷<input type="file" id="replyImg" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none"></label>
+      <label class="reply-img-btn" title="添加图片">📷<input type="file" id="replyImg" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif" style="display:none"></label>
       <button id="replySend" class="cm-btn">发送</button>
     </div>
     <div class="reply-img-prev" id="replyImgPrev" style="display:none"><img id="replyImgPrevImg" alt=""><button class="cm-img-del" id="replyImgDel">✕</button></div>
@@ -622,6 +627,22 @@ function showToast(msg){
   var CURL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
   var CKEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
   /* 评论图片上传 */
+
+  /* 评论图片全屏预览 */
+  function zoomImg(src){
+    var mask = document.getElementById('cmZoomMask');
+    if(!mask){
+      mask = document.createElement('div');
+      mask.id = 'cmZoomMask';
+      mask.className = 'cm-zoom';
+      mask.innerHTML = '<img id="cmZoomImg" alt=""><button class="cm-zoom-close" id="cmZoomClose">✕</button>';
+      document.body.appendChild(mask);
+      mask.addEventListener('click', function(e){ if(e.target === mask || e.target.id === 'cmZoomClose'){ mask.classList.remove('show'); setTimeout(function(){ mask.style.display='none'; }, 240); } });
+    }
+    document.getElementById('cmZoomImg').src = src;
+    mask.style.display = 'flex';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ mask.classList.add('show'); }); });
+  }
   function uploadImg(file){
     return new Promise(function(res, rej){
       var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
@@ -662,7 +683,7 @@ function showToast(msg){
         '<div class="cm-body">' +
           '<div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
           '<div class="cm-text">' + esc(c.content) + '</div>' +
-          (c.image_url ? '<img class="cm-img" src="' + esc(c.image_url) + '" loading="lazy" onclick="window.open(this.src)" style="cursor:zoom-in">' : '') +
+          (c.image_url ? '<img class="cm-img" src="' + esc(c.image_url) + '" loading="lazy" onclick="zoomImg(this.src)" style="cursor:zoom-in">' : '') +
           '<div class="cm-actions"><button class="cm-reply-btn" data-id="' + c.id + '" data-name="' + esc(c.nickname||'匿名') + '">💬 回复' + (rep.length ? ' (' + rep.length + ')' : '') + '</button></div>' +
         '</div>' +
       '</div>';
@@ -738,10 +759,10 @@ function showToast(msg){
     if(!c) return;
     repTo = { id: id, name: name };
     document.getElementById('replyClose').onclick = closeReply;
-    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div>' + (c.image_url ? '<img class="cm-img" src="' + esc(c.image_url) + '" loading="lazy" onclick="window.open(this.src)" style="cursor:zoom-in">' : '') + '</div>';
+    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div>' + (c.image_url ? '<img class="cm-img" src="' + esc(c.image_url) + '" loading="lazy" onclick="zoomImg(this.src)" style="cursor:zoom-in">' : '') + '</div>';
     var reps = c.replies || [];
     replyList.innerHTML = reps.length ? reps.map(function(r){
-      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(r.nickname, r.title) + '<span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div>' + (r.image_url ? '<img class="cm-img" src="' + esc(r.image_url) + '" loading="lazy" onclick="window.open(this.src)" style="cursor:zoom-in">' : '') + '</div></div>';
+      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(r.nickname, r.title) + '<span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div>' + (r.image_url ? '<img class="cm-img" src="' + esc(r.image_url) + '" loading="lazy" onclick="zoomImg(this.src)" style="cursor:zoom-in">' : '') + '</div></div>';
     }).join('') : '<div class="cm-empty">还没有回复，快来抢沙发 🌸</div>';
     replyInput.placeholder = '回复 @' + name + '：';
     mask.style.display = 'flex';
