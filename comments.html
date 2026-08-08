@@ -622,14 +622,14 @@ function showToast(msg){
   var CURL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
   var CKEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
   /* 评论图片上传 */
-  function uploadImg(file, token){
+  function uploadImg(file){
     return new Promise(function(res, rej){
       var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
       if(['jpg','jpeg','png','webp','gif'].indexOf(ext) < 0) ext = 'jpg';
       var name = Date.now() + '_' + Math.random().toString(36).slice(2,8) + '.' + ext;
       fetch(CURL + '/storage/v1/object/comment-img/' + name, {
         method: 'POST',
-        headers: { 'apikey': CKEY, 'Authorization': 'Bearer ' + token, 'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'false' },
+        headers: { 'apikey': CKEY, 'Authorization': 'Bearer ' + CKEY, 'Content-Type': file.type || 'image/jpeg', 'x-upsert': 'false' },
         body: file
       }).then(function(r){ return r.json(); })
         .then(function(d){
@@ -722,7 +722,7 @@ function showToast(msg){
       .finally(function(){ btn.disabled = false; btn.textContent = '发布留言'; });
     };
     if(pendingImg){
-      uploadImg(pendingImg, u.token).then(function(url){ doPublish(url); }).catch(function(){ showToast('图片上传失败，请重试'); btn.disabled = false; btn.textContent = '发布留言'; });
+      uploadImg(pendingImg).then(function(url){ doPublish(url); }).catch(function(){ showToast('图片上传失败，请重试'); btn.disabled = false; btn.textContent = '发布留言'; });
     } else { doPublish(null); }
   });
   /* 抖音式回复弹层 */
@@ -775,7 +775,7 @@ function showToast(msg){
       .finally(function(){ replySend.disabled = false; replySend.textContent = '发送'; });
     };
     if(repPendingImg){
-      uploadImg(repPendingImg, u.token).then(function(url){ doReply(url); }).catch(function(){ showToast('图片上传失败，请重试'); replySend.disabled = false; replySend.textContent = '发送'; });
+      uploadImg(repPendingImg).then(function(url){ doReply(url); }).catch(function(){ showToast('图片上传失败，请重试'); replySend.disabled = false; replySend.textContent = '发送'; });
     } else { doReply(null); }
   });
   /* 回复图片选择预览 */
