@@ -383,6 +383,7 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .cm-wrap{max-width:760px;margin:0 auto;padding:18px 16px 60px}
 .cm-wrap .comments{background:rgba(255,255,255,.75);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-radius:20px;border:1px solid rgba(255,255,255,.9);padding:22px;box-shadow:0 8px 32px rgba(80,60,120,.08)}
 .cm-hero-rule{width:56px;height:3px;border-radius:99px;margin:14px auto 0;background:linear-gradient(90deg,#ec4899,#8b5cf6)}
+.cm-badge{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;font-size:10.5px;font-weight:700;color:#7c4a03;background:linear-gradient(135deg,#fbbf24,#f59e0b);vertical-align:1px;box-shadow:0 1px 4px rgba(245,158,11,.4);letter-spacing:.5px}
 /* 抖音式回复弹层 */
 .cm-actions{margin-top:6px}
 .cm-reply-btn{background:none;border:none;color:#8b5cf6;font-size:12px;cursor:pointer;padding:2px 8px 2px 0;font-family:inherit}
@@ -613,6 +614,7 @@ function showToast(msg){
   }
   function avatarBg(n){ var h=0,s=String(n||'匿'); for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return ['linear-gradient(135deg,#ec4899,#8b5cf6)','linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#06b6d4,#3b82f6)','linear-gradient(135deg,#10b981,#059669)','linear-gradient(135deg,#f43f5e,#ec4899)','linear-gradient(135deg,#8b5cf6,#6366f1)'][h%6]; }
   function avatar(n){ return '<div class="cm-av" style="background:' + avatarBg(n) + '">' + esc((n||'匿').slice(0,1)) + '</div>'; }
+  function nameHtml(n,t){ return '<span class="cm-name">' + esc(n||'匿名') + '</span>' + (t ? '<span class="cm-badge">' + esc(t) + '</span>' : ''); }
   var COMMENTS = [];
   function render(cs){
     COMMENTS = cs || [];
@@ -622,7 +624,7 @@ function showToast(msg){
       return '<div class="cm-item">' +
         avatar(c.nickname) +
         '<div class="cm-body">' +
-          '<div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
+          '<div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div>' +
           '<div class="cm-text">' + esc(c.content) + '</div>' +
           '<div class="cm-actions"><button class="cm-reply-btn" data-id="' + c.id + '" data-name="' + esc(c.nickname||'匿名') + '">💬 回复' + (rep.length ? ' (' + rep.length + ')' : '') + '</button></div>' +
         '</div>' +
@@ -678,10 +680,10 @@ function showToast(msg){
     if(!c) return;
     repTo = { id: id, name: name };
     document.getElementById('replyClose').onclick = closeReply;
-    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div>';
+    replyTarget.innerHTML = avatar(c.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(c.nickname, c.title) + '<span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div>';
     var reps = c.replies || [];
     replyList.innerHTML = reps.length ? reps.map(function(r){
-      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(r.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div></div></div>';
+      return '<div class="cm-item cm-rep">' + avatar(r.nickname) + '<div class="cm-body"><div class="cm-meta">' + nameHtml(r.nickname, r.title) + '<span class="cm-time">' + timeAgo(r.created_at) + '</span></div><div class="cm-text">' + esc(r.content) + '</div></div></div>';
     }).join('') : '<div class="cm-empty">还没有回复，快来抢沙发 🌸</div>';
     replyInput.placeholder = '回复 @' + name + '：';
     mask.style.display = 'flex';
