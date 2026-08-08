@@ -183,21 +183,7 @@ a{color:var(--brand-deep);text-decoration:none}
 .price-table .hot{color:#e11d48;font-weight:800}
 .price-table .ltd{color:#dc2626;font-weight:800}
 .price-table tfoot td{padding:9px 8px;font-size:11px;color:var(--ink-3);border-top:1px dashed rgba(255,255,255,.8)}
-/* ===== 款式预览（效果图） ===== */
-.preview-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:64px}
-.preview-grid .pv{position:relative;border-radius:18px;padding:16px 10px 14px;color:#fff;cursor:pointer;transition:transform .2s,box-shadow .2s;text-align:center;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,.14)}
-.preview-grid .pv:hover{transform:translateY(-5px) rotate(-1deg);box-shadow:0 16px 34px rgba(0,0,0,.22)}
-.preview-grid .pv .pv-em{font-size:40px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.25))}
-.preview-grid .pv .pv-name{font-size:13px;font-weight:800;margin-top:8px;letter-spacing:1px}
-.preview-grid .pv .pv-sub{font-size:9.5px;opacity:.85;letter-spacing:2px;margin-top:2px}
-.preview-grid .pv .pv-price{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.25);backdrop-filter:blur(4px);font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px}
-.preview-grid .pv.sold{opacity:.55;filter:grayscale(.5)}
-.preview-grid .pv .pv-tip{position:absolute;bottom:6px;left:0;right:0;font-size:9px;opacity:.9;letter-spacing:1px}
-.pv-t1{background:linear-gradient(135deg,#f9a8d4,#ec4899)}
-.pv-t2{background:linear-gradient(135deg,#a5b4fc,#6366f1)}
-.pv-t3{background:linear-gradient(135deg,#fcd34d,#f59e0b)}
-.pv-t4{background:linear-gradient(135deg,#c4b5fd,#8b5cf6)}
-.pv-t5{background:linear-gradient(135deg,#fca5a5,#dc2626)}
+
 /* ===== 付款确认 ===== */
 .pay-confirm{margin-top:22px;border-top:1px dashed rgba(255,255,255,.8);padding-top:18px}
 .pay-confirm h4{font-size:14.5px;font-weight:800;margin-bottom:4px}
@@ -220,7 +206,6 @@ a{color:var(--brand-deep);text-decoration:none}
 .style-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .style-chips .sc{font-size:11px;font-weight:600;color:var(--brand-deep);background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.25);border-radius:999px;padding:3px 10px}
 @media (max-width:720px){
-  .preview-grid{grid-template-columns:repeat(3,1fr)}
   .story .s-pts{grid-template-columns:repeat(3,1fr)}
   .price-table{font-size:11px}
   .price-table th,.price-table td{padding:9px 4px}
@@ -635,20 +620,6 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
     </tbody>
     <tfoot><tr><td colspan="4">💡 下单后余额自动到账，用户名按所选档位规则开通 · 微信：k638666798k</td></tr></tfoot>
   </table>
-
-  <!-- ===== 款式预览（效果图） ===== -->
-  <div class="sec-head">
-    <div class="en">GALLERY</div>
-    <h2>款式预览</h2>
-  </div>
-  <p style="font-size:12.5px;color:var(--ink-3);margin:-46px 0 14px">示意图，实际款式按你的定制需求制作 · 点击可快速选择下单</p>
-  <div class="preview-grid">
-    <div class="pv pv-t1" data-pick="体验版（¥9.9）"><span class="pv-price">¥9.9</span><div class="pv-em">🎈</div><div class="pv-name">体验版</div><div class="pv-sub">SAKURA CARD</div><div class="pv-tip">尝鲜体验</div></div>
-    <div class="pv pv-t2" data-pick="经典款（¥59.9）"><span class="pv-price">¥59.9</span><div class="pv-em">🎨</div><div class="pv-name">经典款</div><div class="pv-sub">SAKURA CARD</div><div class="pv-tip">经典之选</div></div>
-    <div class="pv pv-t3" data-pick="精品款（¥99.9）"><span class="pv-price">¥99.9</span><div class="pv-em">⭐</div><div class="pv-name">精品款</div><div class="pv-sub">SAKURA CARD</div><div class="pv-tip">够用一学期</div></div>
-    <div class="pv pv-t4" data-pick="豪华款（¥125.99）"><span class="pv-price">¥125.99</span><div class="pv-em">💎</div><div class="pv-name">豪华款</div><div class="pv-sub">SAKURA CARD</div><div class="pv-tip">尊享定制</div></div>
-    <div class="pv pv-t5" data-pick="内部卡（¥200）"><span class="pv-price">¥200</span><div class="pv-em">🔥</div><div class="pv-name">内部卡</div><div class="pv-sub">SAKURA CARD</div><div class="pv-tip">限量内部</div></div>
-  </div>
 
   <!-- ===== 工作室卡 ===== -->
   <div class="maker glass">
@@ -1169,21 +1140,6 @@ document.querySelectorAll('.pick').forEach(btn => {
 })();
 
 
-/* 款式预览卡 → 预选 + 滚动 */
-document.querySelectorAll('.preview-grid .pv').forEach(el => {
-  el.addEventListener('click', () => {
-    const v = el.getAttribute('data-pick');
-    if(el.classList.contains('sold')){ showToast('内部卡本月已售完，下个月再来吧'); return; }
-    const sel = document.getElementById('svc');
-    [...sel.options].forEach(o => { if(o.text === v) sel.value = o.value; });
-    sel.dispatchEvent(new Event('change'));
-    document.getElementById('success').style.display = 'none';
-    document.getElementById('orderForm').style.display = 'block';
-    showToast('已选择：' + v);
-    document.getElementById('order').scrollIntoView({behavior:'smooth'});
-  });
-});
-
 /* ===== 订单提交 → Supabase ===== */
 const SUPABASE_URL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
@@ -1604,8 +1560,6 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
       tag.style.display = 'block';
       line.classList.add('on');
       if(pick){ pick.disabled = true; pick.textContent = '本月已售完'; }
-      var pv = document.querySelector('.preview-grid .pv[data-pick="内部卡（¥200）"]');
-      if(pv){ pv.classList.add('sold'); }
     }
   }).catch(function(){});
 })();
