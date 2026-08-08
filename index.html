@@ -580,25 +580,6 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
       <div class="ans">收到货如果发现用不了、不适用，或与沟通不符，支持退换，放心下单。</div>
     </details>
   </div>
-  <!-- ===== 评论区 ===== -->
-  <div class="sec-head">
-    <div class="en">COMMENTS</div>
-    <h2>访客留言</h2>
-  </div>
-  <div class="comments glass" id="comments">
-    <div class="cm-list" id="cmList"><div class="cm-empty">加载中…</div></div>
-<div class="cm-form">
-      <div class="cm-lock" id="cmLock">
-        <span>🔒 登录后才能留言</span>
-        <button class="cm-btn" onclick="openAuth()">登录 / 注册</button>
-      </div>
-      <div class="cm-write" id="cmWrite" style="display:none">
-        <div class="cm-user" id="cmUser"></div>
-        <textarea id="cmText" maxlength="500" rows="3" placeholder="登录后留言，昵称自动显示～"></textarea>
-        <button class="cm-btn" id="cmBtn">发布留言</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <footer>
@@ -1091,70 +1072,6 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
   });
 })();
 
-
-/* ---- 评论区（强制登录） ---- */
-(function(){
-  var list = document.getElementById('cmList');
-  if(!list) return;
-  var lock = document.getElementById('cmLock');
-  var write = document.getElementById('cmWrite');
-  var userEl = document.getElementById('cmUser');
-  var textEl = document.getElementById('cmText');
-  var btn = document.getElementById('cmBtn');
-  var CURL = 'https://wpcwssdlxuxfgxsrfjtn.supabase.co';
-  var CKEY = 'sb_publishable_81wwjNdQlR-8i9Sp1auHeg_RyzeW-yc';
-  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function timeAgo(ts){
-    var d = new Date(ts), diff = (Date.now() - d.getTime())/1000;
-    if(diff < 60) return '刚刚';
-    if(diff < 3600) return Math.floor(diff/60) + ' 分钟前';
-    if(diff < 86400) return Math.floor(diff/3600) + ' 小时前';
-    if(diff < 604800) return Math.floor(diff/86400) + ' 天前';
-    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  }
-  function render(cs){
-    if(!cs.length){ list.innerHTML = '<div class="cm-empty">还没有留言，登录后抢沙发 🌸</div>'; return; }
-    list.innerHTML = cs.map(function(c){
-      return '<div class="cm-item"><div class="cm-av">' + esc((c.nickname||'匿').slice(0,1)) + '</div><div class="cm-body"><div class="cm-meta"><span class="cm-name">' + esc(c.nickname||'匿名') + '</span><span class="cm-time">' + timeAgo(c.created_at) + '</span></div><div class="cm-text">' + esc(c.content) + '</div></div></div>';
-    }).join('');
-  }
-  function load(){
-    fetch(CURL + '/rest/v1/comments?select=*&order=created_at.desc&limit=50', { headers: { 'apikey': CKEY } })
-      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(render)
-      .catch(function(){ list.innerHTML = '<div class="cm-empty">评论区暂时无法加载 🌸</div>'; });
-  }
-  function auth(){ try{ return JSON.parse(localStorage.getItem('sk_user')||'null'); }catch(e){ return null; } }
-  function refresh(){
-    var u = auth();
-    lock.style.display = u ? 'none' : 'flex';
-    write.style.display = u ? 'block' : 'none';
-    if(u){ userEl.innerHTML = '💬 留言将以 <b>' + esc(u.username) + '</b> 的身份发布'; }
-  }
-  btn.addEventListener('click', function(){
-    var u = auth();
-    if(!u){ showToast('请先登录'); if(window.openAuth) window.openAuth(); return; }
-    var content = textEl.value.trim();
-    if(!content){ showToast('写点什么再发布吧'); return; }
-    if(content.length > 500){ showToast('内容太长啦（最多500字）'); return; }
-    btn.disabled = true; btn.textContent = '发布中…';
-    fetch(CURL + '/rest/v1/rpc/insert_comment', {
-      method: 'POST',
-      headers: { 'apikey': CKEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_token: u.token, p_content: content })
-    }).then(function(r){ return r.json(); })
-      .then(function(d){
-        if(d && d.ok){ textEl.value = ''; showToast('留言已发布 🎉'); load(); }
-        else if(d && d.code === 'noauth'){ localStorage.removeItem('sk_user'); refresh(); showToast('登录已失效，请重新登录'); if(window.openAuth) window.openAuth(); }
-        else { showToast((d && d.msg) || '发布失败，请稍后再试'); }
-      })
-      .catch(function(){ showToast('发布失败，请稍后再试'); })
-      .finally(function(){ btn.disabled = false; btn.textContent = '发布留言'; });
-  });
-  window.addEventListener('sk_user_changed', refresh);
-  refresh();
-  load();
-})();
 
 /* ---- 用户注册/登录（用户名+联系方式，评论强制登录） ---- */
 (function(){
