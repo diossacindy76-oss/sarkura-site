@@ -970,19 +970,28 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
 })();
 
 
-/* ---- 进入动画 ---- */
+/* ---- 进入动画 + 打开置顶 ---- */
 (function(){
+  if('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
   var sp = document.getElementById('splash');
   if(!sp) return;
   var done = false;
   function hide(){
     if(done) return;
     done = true;
+    window.scrollTo(0, 0);
     sp.classList.add('hide');
-    setTimeout(function(){ if(sp.parentNode) sp.parentNode.removeChild(sp); }, 950);
+    setTimeout(function(){
+      window.scrollTo(0, 0);
+      if(sp.parentNode) sp.parentNode.removeChild(sp);
+    }, 950);
   }
   setTimeout(hide, 2250);
-  window.addEventListener('load', function(){ setTimeout(hide, 600); });
+  window.addEventListener('load', function(){
+    window.scrollTo(0, 0);
+    setTimeout(hide, 600);
+  });
 })();
 
 </script>
