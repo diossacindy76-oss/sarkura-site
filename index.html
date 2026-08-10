@@ -24,11 +24,7 @@ html{scroll-behavior:smooth}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonicOS Sans SC","Microsoft YaHei","Noto Sans SC",sans-serif;
   color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
-  background:
-    radial-gradient(90% 60% at 85% -5%, rgba(244,114,182,.55) 0%, transparent 55%),
-    radial-gradient(80% 55% at 10% 8%, rgba(249,168,212,.5) 0%, transparent 55%),
-    radial-gradient(90% 70% at 50% 115%, rgba(255,199,221,.5) 0%, transparent 55%),
-    linear-gradient(165deg,#fff5f9 0%,#fdf0f7 45%,#ffe9f2 100%);
+  background:linear-gradient(165deg,#fff5f9 0%,#fdf0f7 45%,#ffe9f2 100%);
   background-attachment:fixed;
   min-height:100vh;min-height:100dvh;
 }
@@ -491,9 +487,45 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   -webkit-text-fill-color:transparent;color:transparent;animation:clockRuns 3s infinite linear}
 #clockPoem{font-size:13.5px;color:var(--ink-2);margin-top:8px;min-height:20px;font-style:italic;opacity:.9}
 @keyframes clockRuns{0%{background-position:0 0}100%{background-position:100% 0}}
+
+/* ===== ReactBits 风格增强（极光/流光/逐字/聚光/高光） ===== */
+.aurora{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.aurora i{position:absolute;border-radius:50%;will-change:transform}
+.aurora .ab1{width:56vmax;height:56vmax;left:-14vmax;top:-16vmax;background:radial-gradient(circle,rgba(244,114,182,.42) 0%,rgba(244,114,182,0) 60%);animation:aur1 32s ease-in-out infinite alternate}
+.aurora .ab2{width:48vmax;height:48vmax;right:-12vmax;top:4vmax;background:radial-gradient(circle,rgba(249,168,212,.5) 0%,rgba(249,168,212,0) 60%);animation:aur2 40s ease-in-out infinite alternate}
+.aurora .ab3{width:52vmax;height:52vmax;left:2vmax;bottom:-18vmax;background:radial-gradient(circle,rgba(255,199,221,.5) 0%,rgba(255,199,221,0) 60%);animation:aur3 36s ease-in-out infinite alternate}
+.aurora .ab4{width:38vmax;height:38vmax;right:10vmax;bottom:8vmax;background:radial-gradient(circle,rgba(236,72,153,.3) 0%,rgba(236,72,153,0) 60%);animation:aur4 44s ease-in-out infinite alternate}
+@keyframes aur1{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(11vmax,9vmax,0) scale(1.28)}}
+@keyframes aur2{from{transform:translate3d(0,0,0) scale(1.1)}to{transform:translate3d(-13vmax,11vmax,0) scale(.88)}}
+@keyframes aur3{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-9vmax,-11vmax,0) scale(1.32)}}
+@keyframes aur4{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(9vmax,-7vmax,0) scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.aurora i{animation:none}}
+
+/* ② ShinyText 流光扫字 */
+.cover-info h1{background-size:200% auto;animation:shiny 7s linear infinite}
+.m-meta{display:inline-block;background:linear-gradient(90deg,#be185d,#ec4899,#f472b6,#ec4899,#be185d);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shiny 5.5s linear infinite}
+@keyframes shiny{0%{background-position:0% center}100%{background-position:200% center}}
+@media (prefers-reduced-motion:reduce){.cover-info h1,.m-meta{animation:none}}
+
+/* ③ BlurText 逐字浮现（区块标题） */
+.bt-word{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(26px);transition:opacity .55s ease,filter .55s ease,transform .55s ease}
+.bt-in .bt-word{opacity:1;filter:blur(0);transform:none}
+@media (prefers-reduced-motion:reduce){.bt-word{opacity:1;filter:none;transform:none;transition:none}}
+
+/* ④ SpotlightCard 聚光（玻璃卡，光斑点亮背景、不遮内容） */
+.spot::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .45s ease;z-index:-1;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.6),transparent 66%)}
+.spot:hover::before,.spot:active::before{opacity:1}
+
+/* ⑤ SpecularButton 高光扫过 */
+.btn-primary,.draw-btn,.m-follow{position:relative;overflow:hidden}
+.btn-primary::after,.draw-btn::after,.m-follow::after{content:"";position:absolute;top:-30%;bottom:-30%;left:-70%;width:36%;transform:skewX(-22deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:spec 4.2s ease-in-out infinite;pointer-events:none}
+@keyframes spec{0%{left:-70%}60%,100%{left:140%}}
+@media (prefers-reduced-motion:reduce){.btn-primary::after,.draw-btn::after,.m-follow::after{animation:none}}
 </style>
 </head>
 <body>
+<!-- ===== Aurora 樱花极光背景 ===== -->
+<div class="aurora"><i class="ab1"></i><i class="ab2"></i><i class="ab3"></i><i class="ab4"></i></div>
 
 <!-- ===== 进入动画遮罩 ===== -->
 <div id="splash">
@@ -1627,6 +1659,77 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     }).catch(function(){});
   };
   loadDraw();
+})();
+
+/* ===== ReactBits 风格增强 JS（逐字浮现/聚光/数字滚动） ===== */
+(function(){
+  'use strict';
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  /* ③ BlurText：区块标题逐字浮现 */
+  var heads = document.querySelectorAll('.sec-head h2');
+  if(heads.length && 'IntersectionObserver' in window){
+    heads.forEach(function(h){
+      var txt = h.textContent;
+      h.textContent = '';
+      var frag = document.createDocumentFragment();
+      for(var i=0;i<txt.length;i++){
+        var s = document.createElement('span');
+        s.className = 'bt-word';
+        s.textContent = (txt[i]===' ' ? '\u00A0' : txt[i]);
+        frag.appendChild(s);
+      }
+      h.appendChild(frag);
+      var io = new IntersectionObserver(function(es){
+        if(es[0].isIntersecting){
+          io.disconnect();
+          var ws = h.querySelectorAll('.bt-word');
+          ws.forEach(function(w,idx){ w.style.transitionDelay = (idx*70)+'ms'; });
+          h.classList.add('bt-in');
+        }
+      },{threshold:.5});
+      io.observe(h);
+    });
+  }
+
+  /* ④ SpotlightCard：玻璃卡聚光跟随 */
+  var cards = document.querySelectorAll('.glass');
+  cards.forEach(function(c){
+    c.classList.add('spot');
+    var set = function(e){
+      var r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', (e.clientX - r.left)+'px');
+      c.style.setProperty('--my', (e.clientY - r.top)+'px');
+    };
+    c.addEventListener('pointermove', set);
+    c.addEventListener('pointerdown', set);
+  });
+
+  /* ⑤ CountUp：价格金额滚动 */
+  var amts = document.querySelectorAll('.price-table .amt');
+  if(amts.length && 'IntersectionObserver' in window){
+    amts.forEach(function(el){
+      var raw = el.textContent;
+      var target = parseFloat(raw);
+      if(isNaN(target)) return;
+      var dec = (String(raw).split('.')[1]||'').length;
+      var io = new IntersectionObserver(function(es){
+        if(es[0].isIntersecting){
+          io.disconnect();
+          var t0 = null;
+          function step(ts){
+            if(!t0) t0 = ts;
+            var p = Math.min((ts-t0)/1000, 1);
+            var eased = 1 - Math.pow(1-p, 3);
+            el.textContent = (target*eased).toFixed(dec);
+            if(p<1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+        }
+      },{threshold:.4});
+      io.observe(el);
+    });
+  }
 })();
 </script>
 </body>
