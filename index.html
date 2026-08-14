@@ -577,6 +577,10 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   .pro-parallax, .cover-art, .aurora i{will-change:auto !important;}
 }
 </style>
+<style id="sarkura-music-idle">
+.music-fab.idle{animation:fabHint 1.8s ease-in-out infinite !important;}
+@keyframes fabHint{0%,100%{transform:scale(1);box-shadow:0 4px 16px rgba(238,191,210,.35);}50%{transform:scale(1.12);box-shadow:0 4px 26px rgba(238,191,210,.6);}}
+</style>
 </head>
 <body>
 <!-- ===== Aurora 樱花极光背景 ===== -->
@@ -1115,18 +1119,19 @@ function tryPlay(){
   if(curSong < 0) curSong = randSong(-1);
   applySong();
   audio.play().then(() => { fab.classList.add('playing'); fab.textContent = '🎶'; })
-    .catch(() => { musicStarted = false; });
+    .catch(() => { musicStarted = false; fab.classList.add('idle'); fab.textContent = '🎵'; });
 }
 /* 进站尝试自动播放 */
 tryPlay();
 /* 浏览器安全限制兜底：首次交互立即响 */
-['touchstart','click','scroll','keydown'].forEach(ev =>
+['touchstart','click','keydown'].forEach(ev =>
   document.addEventListener(ev, function kick(){ tryPlay(); }, { once:false, passive:true }));
-setTimeout(() => { if(!musicStarted){ document.addEventListener('pointerdown', tryPlay, {once:true}); } }, 800);
+document.addEventListener('pointerdown', function autostart(e){ tryPlay(); }, { once:true, passive:false });
+document.addEventListener('touchend', function autostart2(e){ tryPlay(); }, { once:true, passive:false });
 
 /* 按钮开关 + 面板 */
 fab.addEventListener('click', () => {
-  if(audio.paused){ audio.play().then(()=>{ fab.classList.add('playing'); fab.textContent='🎶'; }); }
+  if(audio.paused){ audio.play().then(()=>{ fab.classList.remove('idle'); fab.classList.add('playing'); fab.textContent='🎶'; musicStarted=true; }); }
   else { audio.pause(); fab.classList.remove('playing'); fab.textContent='🎵'; }
   panel.classList.toggle('open');
 });
