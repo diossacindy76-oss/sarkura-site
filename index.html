@@ -528,6 +528,24 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 @keyframes spec{0%{left:-70%}60%,100%{left:140%}}
 @media (prefers-reduced-motion:reduce){.btn-primary::after,.draw-btn::after,.m-follow::after{animation:none}}
 </style>
+
+<!-- ===== Sarkura 顶级动效依赖库 ===== -->
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+<style id="sarkura-pro-css">
+/* ===== 顶级动效样式 ===== */
+#sakuraLogo{position:fixed;inset:0;z-index:3;pointer-events:none}
+#sakuraLogo canvas{display:block}
+/* hero 视差容器 */
+.pro-parallax{will-change:transform}
+/* 滚动触发渐显的强化版 */
+.pro-reveal{opacity:0;transform:translateY(60px) scale(.96)}
+/* 流光文字标记 */
+.pro-shine{position:relative;display:inline-block}
+@media (prefers-reduced-motion:reduce){.pro-reveal{opacity:1;transform:none}}
+</style>
 </head>
 <body>
 <!-- ===== Aurora 樱花极光背景 ===== -->
@@ -1736,6 +1754,159 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
       io.observe(el);
     });
   }
+})();
+</script>
+
+<script id="sarkura-pro-js">
+(function(){
+try{
+/* ============================================================
+   Sarkura 顶级动效引擎
+   依赖：tsparticles + GSAP + ScrollTrigger
+   ============================================================ */
+
+/* ---------- 1. 樱花粒子聚合 LOGO（打开页面时的惊艳开场） ---------- */
+function buildLogoParticles(){
+  if(typeof tsParticles==='undefined'){console.warn('tsParticles未加载');return;}
+  var host=mk('div','sakuraLogo');
+  document.body.appendChild(host);
+  tsParticles.load('sakuraLogo',{
+    fullScreen:{enable:true,zIndex:3},
+    fpsLimit:60,
+    detectRetina:true,
+    particles:{
+      number:{value:0},
+      color:{value:['#eebfd2','#e0a3bd','#d9a7b0','#f4d6e2','#e8c98a']},
+      shape:{type:'circle'},
+      opacity:{value:0.85},
+      size:{value:5,random:true},
+      links:{enable:true,distance:110,color:'#e0a3bd',opacity:.25,width:1},
+      move:{enable:true,speed:2.2,outModes:{default:'bounce'},
+        attract:{enable:true,rotateX:600,rotateY:1200}}
+    },
+    interactivity:{
+      events:{
+        onHover:{enable:true,mode:'attract'},
+        onClick:{enable:true,mode:'push'}
+      },
+      modes:{
+        attract:{distance:180,duration:.4,factor:6},
+        push:{quantity:6}
+      }
+    }
+  });
+}
+
+/* ---------- 2. 樱花粒子聚合文字（滚动到品牌故事时触发） ---------- */
+function buildTextParticles(){
+  if(typeof tsParticles==='undefined')return;
+  var host=mk('div'); host.id='sakuraText'; host.style.cssText='position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity 1.2s';
+  document.body.appendChild(host);
+  tsParticles.load('sakuraText',{
+    fullScreen:{enable:true,zIndex:3},
+    fpsLimit:60,
+    detectRetina:true,
+    particles:{
+      number:{value:900,density:{enable:true}},
+      color:{value:['#eebfd2','#e0a3bd','#d9a7b0','#f4d6e2','#e8c98a']},
+      shape:{type:'circle'},
+      opacity:{value:.9},
+      size:{value:3.2,random:true},
+      move:{enable:true,speed:1.4,direction:'top',outModes:{default:'out'}},
+      links:{enable:true,distance:70,color:'#d9a7b0',opacity:.18,width:.6}
+    }
+  });
+  window.__sakuraTextHost=host;
+}
+
+/* ---------- 3. 工具：创建元素 ---------- */
+function mk(t,id,cls){var e=document.createElement(t);if(id)e.id=id;if(cls)e.className=cls;return e;}
+
+/* ---------- 4. GSAP 滚动驱动叙事动画 ---------- */
+function buildScrollNarrative(){
+  if(typeof gsap==='undefined'||typeof ScrollTrigger==='undefined'){console.warn('GSAP未加载');return;}
+  gsap.registerPlugin(ScrollTrigger);
+
+  // 给关键区块加 reveal 类
+  var targets=['.story','.specs','.price-table','.maker','.reco','.order-box','.faq']
+    .map(function(s){return document.querySelector(s);}).filter(Boolean);
+  targets.forEach(function(el){el.classList.add('pro-reveal');});
+
+  gsap.utils.toArray('.pro-reveal').forEach(function(el){
+    gsap.fromTo(el,
+      {opacity:0,y:60,scale:.96},
+      {opacity:1,y:0,scale:1,duration:1,ease:'power3.out',
+       scrollTrigger:{trigger:el,start:'top 85%',once:true}}
+    );
+  });
+
+  // 主视觉视差（hero 深度）
+  var art=document.querySelector('.cover-art');
+  if(art){
+    art.classList.add('pro-parallax');
+    gsap.to(art,{
+      y:180,scale:1.04,ease:'none',
+      scrollTrigger:{trigger:'.cover',start:'top top',end:'bottom top',scrub:true}
+    });
+  }
+
+  // 标题逐字流光加强
+  var h1=document.querySelector('.cover-info h1');
+  if(h1){
+    var txt=h1.textContent; h1.textContent='';
+    var words=txt.split('');
+    words.forEach(function(ch){
+      var s=mk('span');s.className='tf';s.style.display='inline-block';
+      s.style.animationDelay=(Math.random()*.35)+'s';
+      s.textContent=ch;
+      h1.appendChild(s);
+    });
+  }
+
+  // 品牌故事区块触发「粒子聚合文字」
+  var story=document.querySelector('.story');
+  if(story && window.__sakuraTextHost){
+    ScrollTrigger.create({
+      trigger:story,start:'top 70%',end:'bottom 30%',
+      onEnter:function(){window.__sakuraTextHost.style.opacity=1;},
+      onLeave:function(){window.__sakuraTextHost.style.opacity=0;},
+      onEnterBack:function(){window.__sakuraTextHost.style.opacity=1;},
+      onLeaveBack:function(){window.__sakuraTextHost.style.opacity=0;}
+    });
+  }
+
+  // 价格数字滚动（GSAP版）
+  gsap.utils.toArray('.price-table .amt').forEach(function(el){
+    var target=parseFloat(el.textContent);
+    if(isNaN(target))return;
+    var o={v:0};
+    gsap.to(o,{
+      v:target,duration:1.4,ease:'power2.out',
+      scrollTrigger:{trigger:el,start:'top 90%',once:true},
+      onUpdate:function(){el.textContent=o.v.toFixed(1).replace(/\.0$/,'');}
+    });
+  });
+}
+
+/* ---------- 5. 初始化 ---------- */
+// 触屏降级：手机上不加载重粒子，保流畅
+var isCoarse=matchMedia('(pointer:coarse)').matches;
+if(!isCoarse){
+  buildLogoParticles();
+  buildTextParticles();
+}
+buildScrollNarrative();
+
+/* ---------- 6. 开场 Logo 粒子渐隐（3秒后淡出，让出主界面） ---------- */
+if(!isCoarse){
+  setTimeout(function(){
+    var l=document.getElementById('sakuraLogo');
+    if(l){l.style.transition='opacity 1.2s';l.style.opacity=0;
+      setTimeout(function(){l.style.display='none';},1200);}
+  },3000);
+}
+
+}catch(err){console.warn('Sarkura顶级动效初始化失败',err);}
 })();
 </script>
 </body>
