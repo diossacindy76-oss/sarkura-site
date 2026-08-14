@@ -546,6 +546,37 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
 .pro-shine{position:relative;display:inline-block}
 @media (prefers-reduced-motion:reduce){.pro-reveal{opacity:1;transform:none}}
 </style>
+
+<style id="sarkura-perf">
+/* ===== 移动端性能优化 ===== */
+@media (max-width:768px), (pointer:coarse){
+  .aurora i{animation:none !important;}
+  .aurora{background:radial-gradient(120vmax 120vmax at 20% -10%, rgba(201,139,166,.25) 0%, transparent 60%),
+          radial-gradient(100vmax 100vmax at 110% 30%, rgba(232,201,138,.18) 0%, transparent 55%) !important;}
+  [class*="glass"], .glass, [style*="backdrop-filter"],
+  .nav, .lyric-card, .card, .fab, .auth-card, .price-card, .spec-card,
+  .story-card, .order-card, .reco-card, .faq-card,
+  header, .cover-info, .music-bar, .draw-card, .maker-card{
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+  }
+  .glass, .card, .price-card, .spec-card, .story-card,
+  .reco-card, .order-card, .faq-card, .maker-card, .draw-card,
+  .lyric-card, .music-bar, .nav, header, .fab, .auth-card{
+    background:rgba(22,18,34,.92) !important;
+    box-shadow:0 2px 12px rgba(0,0,0,.35) !important;
+  }
+  .chShine, .fabPulse, .clockRuns, .glowPulse, .lyricFloat,
+  .shiny, .titleShine, .spec, .borderFlow, .cfBlink{animation:none !important;}
+  .tf, .titleUp{animation:none !important; opacity:1 !important; transform:none !important;}
+}
+@media (pointer:fine){
+  .pro-parallax, .cover-art{will-change:transform;}
+}
+@media (pointer:coarse){
+  .pro-parallax, .cover-art, .aurora i{will-change:auto !important;}
+}
+</style>
 </head>
 <body>
 <!-- ===== Aurora 樱花极光背景 ===== -->
@@ -914,11 +945,11 @@ footer .brand{font-weight:700;font-size:15px;margin-bottom:6px;background:linear
   let W, H, DPR, petals = [];
   const COLORS = ['#eebfd2','#e0a3bd','#d9a7b0','#f4d6e2','#e8c98a'];
   function resize(){
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    DPR = Math.min(window.devicePixelRatio || 1, matchMedia("(pointer:coarse)").matches ? 1.5 : 2);
     W = window.innerWidth; H = window.innerHeight;
     cv.width = W * DPR; cv.height = H * DPR;
     ctx.setTransform(DPR,0,0,DPR,0,0);
-    const n = Math.min(60, Math.max(34, Math.floor(W/18)));
+    const n = matchMedia("(pointer:coarse)").matches ? Math.min(30, Math.max(18, Math.floor(W/30))) : Math.min(60, Math.max(34, Math.floor(W/18)));
     petals = [];
     for(let i=0;i<n;i++) petals.push(newPetal(true));
   }
