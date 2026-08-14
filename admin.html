@@ -4,67 +4,75 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sarkura 订单管理后台</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
-body{background:#f1f5f9;min-height:100vh}
-.hd{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.hd h1{font-size:18px;font-weight:700}
-.hd .badge{background:rgba(255,255,255,.2);padding:3px 10px;border-radius:999px;font-size:12px}
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+body{
+  background:
+    radial-gradient(60% 45% at 85% 8%, rgba(224,163,189,.10) 0%, transparent 60%),
+    radial-gradient(55% 45% at 10% 90%, rgba(201,168,118,.08) 0%, transparent 60%),
+    linear-gradient(165deg,#0d0b14 0%,#131019 48%,#181225 100%);
+  background-attachment:fixed;min-height:100vh
+}
+.hd{background:rgba(13,11,20,.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(230,210,190,.14);color:#eae4f0;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.hd h1{font-size:18px;font-weight:800;background:linear-gradient(120deg,#e0a3bd,#e8c98a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hd .badge{background:rgba(232,201,138,.14);border:1px solid rgba(232,201,138,.3);color:#e8c98a;padding:3px 10px;border-radius:999px;font-size:12px}
 .wrap{max-width:640px;margin:0 auto;padding:16px}
-.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:16px;padding:14px;margin-bottom:12px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.card .time{font-size:12px;color:#94a3b8}
+.card .time{font-size:12px;color:#7d7591}
 .tag{font-size:11px;padding:2px 10px;border-radius:999px;font-weight:600}
-.tag.new{background:#fee2e2;color:#dc2626}
-.tag.contacted{background:#fef3c7;color:#d97706}
-.tag.done{background:#dcfce7;color:#16a34a}
-.row{font-size:14px;color:#334155;margin-bottom:5px;line-height:1.5}
-.row b{color:#0f172a}
+.tag.new{background:rgba(242,109,109,.14);color:#f26d6d}
+.tag.contacted{background:rgba(232,201,138,.14);color:#e8c98a}
+.tag.done{background:rgba(52,211,153,.14);color:#34d399}
+.row{font-size:14px;color:#a79fb3;margin-bottom:5px;line-height:1.5}
+.row b{color:#eae4f0}
 .btns{display:flex;gap:8px;margin-top:10px}
-.btns button{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
-.btns .c{background:#fef3c7;color:#b45309}
-.btns .d{background:#dcfce7;color:#15803d}
-.btns .del{background:#fee2e2;color:#dc2626}
-.empty{text-align:center;color:#94a3b8;padding:50px 0;font-size:14px}
-.login{max-width:380px;margin:80px auto;background:#fff;border-radius:16px;padding:30px 24px;box-shadow:0 10px 30px rgba(30,41,59,.08)}
-.login h2{font-size:20px;margin-bottom:20px;text-align:center}
-.login input{width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:10px;font-size:15px;margin-bottom:12px;outline:none}
-.login input:focus{border-color:#f59e0b}
-.login button{width:100%;padding:13px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
-.login .err{color:#dc2626;font-size:13px;text-align:center;margin-top:10px;display:none}
-.btn-plain{background:none;border:none;color:rgba(255,255,255,.9);font-size:14px;cursor:pointer;text-decoration:underline}
+.btns button{flex:1;padding:8px;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btns .c{background:rgba(232,201,138,.12);color:#e8c98a;border:1px solid rgba(232,201,138,.25)}
+.btns .c:hover{background:rgba(232,201,138,.22)}
+.btns .d{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+.btns .d:hover{background:rgba(52,211,153,.22)}
+.btns .del{background:rgba(242,109,109,.12);color:#f26d6d;border:1px solid rgba(242,109,109,.25)}
+.btns .del:hover{background:rgba(242,109,109,.22)}
+.empty{text-align:center;color:#7d7591;padding:50px 0;font-size:14px}
+.login{max-width:380px;margin:80px auto;background:rgba(255,255,255,.05);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(230,210,190,.16);border-radius:20px;padding:34px 28px;box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px rgba(224,163,189,.06)}
+.login h2{font-size:20px;margin-bottom:22px;text-align:center;background:linear-gradient(120deg,#e0a3bd,#e8c98a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.login input{width:100%;padding:12px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(230,210,190,.14);border-radius:12px;font-size:15px;margin-bottom:12px;outline:none;color:#eae4f0;transition:border-color .2s,box-shadow .2s}
+.login input::placeholder{color:#7d7591}
+.login input:focus{border-color:#c9a876;box-shadow:0 0 0 3px rgba(201,168,118,.15)}
+.login button{width:100%;padding:13px;background:linear-gradient(135deg,#c9a876,#e0a3bd);color:#0d0b14;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;transition:.25s;box-shadow:0 10px 26px rgba(201,168,118,.25)}
+.login button:hover{transform:translateY(-1px);box-shadow:0 14px 34px rgba(201,168,118,.35)}
+.login .err{color:#f26d6d;font-size:13px;text-align:center;margin-top:10px;display:none}
+.btn-plain{background:none;border:none;color:#a79fb3;font-size:14px;cursor:pointer;text-decoration:underline;transition:color .2s}
+.btn-plain:hover{color:#e8c98a}
 .stat{display:flex;gap:8px;margin-bottom:14px}
-.stat div{flex:1;background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid #e2e8f0}
-.stat .n{font-size:22px;font-weight:800;color:#0f172a}
-.stat .l{font-size:12px;color:#64748b}
-.rev{background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;color:#fff}
-.rev .l{font-size:13px;color:#94a3b8}
-.rev .total{font-size:26px;font-weight:800;color:#fbbf24;margin-top:2px}
-.rev .sub{font-size:12px;color:#94a3b8;text-align:right;line-height:1.7}
-.rev .sub b{color:#fff}
-.tabs{display:flex;gap:8px;margin-bottom:14px;background:#fff;border-radius:12px;padding:6px;border:1px solid #e2e8f0}
-.tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:8px;font-size:14px;font-weight:600;color:#64748b;cursor:pointer;transition:.2s}
-.tab.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
-.tab .bdg{display:inline-block;min-width:18px;height:18px;line-height:18px;border-radius:999px;background:rgba(255,255,255,.25);font-size:11px;margin-left:4px}
-.tab:not(.active) .bdg{background:#fef3c7;color:#b45309}
-.cmt-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px}
+.stat div{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:14px;padding:12px;text-align:center}
+.stat .n{font-size:22px;font-weight:800;background:linear-gradient(120deg,#eae4f0,#e8c98a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{font-size:12px;color:#7d7591}
+.rev{background:linear-gradient(135deg,rgba(201,168,118,.16),rgba(224,163,189,.10));border:1px solid rgba(230,210,190,.18);border-radius:16px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;color:#eae4f0}
+.rev .l{font-size:13px;color:#a79fb3}
+.rev .total{font-size:26px;font-weight:800;color:#e8c98a;margin-top:2px}
+.rev .sub{font-size:12px;color:#a79fb3;text-align:right;line-height:1.7}
+.rev .sub b{color:#eae4f0}
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:14px;padding:6px}
+.tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:10px;font-size:14px;font-weight:600;color:#a79fb3;cursor:pointer;transition:.2s}
+.tab.active{background:linear-gradient(135deg,#c9a876,#e0a3bd);color:#0d0b14}
+.tab .bdg{display:inline-block;min-width:18px;height:18px;line-height:18px;border-radius:999px;background:rgba(255,255,255,.12);font-size:11px;margin-left:4px}
+.tab:not(.active) .bdg{background:rgba(232,201,138,.14);color:#e8c98a}
+.cmt-card{background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:16px;padding:14px;margin-bottom:12px}
 .cmt-card .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.cmt-card .name{font-weight:700;color:#0f172a;font-size:14px}
+.cmt-card .name{font-weight:700;color:#eae4f0;font-size:14px}
 .cmt-card .name::before{content:'💬 '}
-.cmt-card .time{font-size:12px;color:#94a3b8}
-.cmt-card .txt{font-size:14px;color:#334155;line-height:1.7;white-space:pre-wrap;word-break:break-word}
-
-
-.usr-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.2s}
-.usr-row:hover{border-color:#f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.12)}
-.usr-av{width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f59e0b,#d97706)}
+.cmt-card .time{font-size:12px;color:#7d7591}
+.cmt-card .txt{font-size:14px;color:#a79fb3;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.usr-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.2s}
+.usr-row:hover{border-color:rgba(201,168,118,.4);box-shadow:0 4px 14px rgba(201,168,118,.1)}
+.usr-av{width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#0d0b14;background:linear-gradient(135deg,#c9a876,#e0a3bd)}
 .usr-info{flex:1;min-width:0}
-.usr-name{font-weight:600;color:#0f172a;font-size:15px}
-.usr-time{color:#94a3b8;font-size:12px;margin-top:2px}
+.usr-name{font-weight:600;color:#eae4f0;font-size:15px}
+.usr-time{color:#7d7591;font-size:12px;margin-top:2px}
 .usr-cnt{text-align:right;flex-shrink:0}
-.usr-cnt b{color:#f59e0b;font-weight:700;font-size:14px}
-.usr-cnt span{color:#94a3b8;font-size:11px}
-</style>
+.usr-cnt b{color:#e8c98a;font-weight:700;font-size:14px}
+.usr-cnt span{color:#7d7591;font-size:11px}</style>
 </head>
 <body>
 <div class="hd" id="hd" style="display:none">
@@ -99,15 +107,15 @@ body{background:#f1f5f9;min-height:100vh}
     <div><div class="n" id="stContacted">0</div><div class="l">已联系</div></div>
     <div><div class="n" id="stDone">0</div><div class="l">已完成</div></div>
   </div>
-  <div class="rev" style="margin-top:12px;background:linear-gradient(135deg,#fffbeb,#fef3c7)">
+  <div class="rev" style="margin-top:12px;background:linear-gradient(135deg,rgba(201,168,118,.14),rgba(224,163,189,.08));border:1px solid rgba(230,210,190,.2)">
     <div>
       <div class="l">🔥 内部卡验证</div>
-      <div id="icStatus" style="font-size:15px;font-weight:700;color:#d97706;margin-top:2px">检查中…</div>
-      <div style="font-size:11.5px;color:#92400e;margin-top:3px">本月限量 1 张 · 锁定后下单内部卡的用户会被拦截</div>
+      <div id="icStatus" style="font-size:15px;font-weight:700;color:#e8c98a;margin-top:2px">检查中…</div>
+      <div style="font-size:11.5px;color:#a79fb3;margin-top:3px">本月限量 1 张 · 锁定后下单内部卡的用户会被拦截</div>
     </div>
     <div style="display:flex;gap:8px;flex-direction:column;min-width:130px">
-      <button onclick="icLock()" id="icLockBtn" style="padding:9px 12px;border:none;border-radius:10px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:13px;font-weight:700;cursor:pointer">🔒 标记本月已售完</button>
-      <button onclick="icUnlock()" id="icUnlockBtn" style="padding:9px 12px;border:none;border-radius:10px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:13px;font-weight:700;cursor:pointer">🔓 解锁（下月开售）</button>
+      <button onclick="icLock()" id="icLockBtn" style="padding:9px 12px;border:none;border-radius:10px;background:rgba(242,109,109,.16);color:#f26d6d;border:1px solid rgba(242,109,109,.3);font-size:13px;font-weight:700;cursor:pointer">🔒 标记本月已售完</button>
+      <button onclick="icUnlock()" id="icUnlockBtn" style="padding:9px 12px;border:none;border-radius:10px;background:rgba(52,211,153,.16);color:#34d399;border:1px solid rgba(52,211,153,.3);font-size:13px;font-weight:700;cursor:pointer">🔓 解锁（下月开售）</button>
     </div>
   </div>
   <div id="list"></div>
@@ -134,21 +142,21 @@ body{background:#f1f5f9;min-height:100vh}
       <div><div class="n" id="drawTotal">0</div><div class="l">本月报名</div></div>
       <div><div class="n" id="drawWinCount">0</div><div class="l">已开奖月份</div></div>
     </div>
-    <div style="font-size:13px;font-weight:700;color:#0f172a;margin:14px 0 8px">📥 本月报名者（由你定夺中奖者）</div>
+    <div style="font-size:13px;font-weight:700;color:#eae4f0;margin:14px 0 8px">📥 本月报名者（由你定夺中奖者）</div>
     <div id="drawList"></div>
     <div class="empty" id="drawEmpty" style="display:none">本月还没有人报名</div>
-    <div style="font-size:13px;font-weight:700;color:#0f172a;margin:18px 0 8px">🏆 中奖公示（每月保留，前端同步展示）</div>
+    <div style="font-size:13px;font-weight:700;color:#eae4f0;margin:18px 0 8px">🏆 中奖公示（每月保留，前端同步展示）</div>
     <div id="drawWinList"></div>
   </div>
 </div>
 
 <!-- 用户联系方式弹窗 -->
-<div id="contactMask" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:99;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeContact()">
-  <div style="background:#fff;border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25)">
-    <div id="ctAvatar" style="width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f59e0b,#d97706)"></div>
-    <div id="ctName" style="font-size:17px;font-weight:700;color:#0f172a;margin-bottom:6px"></div>
-    <div id="ctContact" style="font-size:14px;color:#64748b;margin-bottom:14px;word-break:break-all"></div>
-    <button onclick="closeContact()" style="padding:8px 22px;border:none;border-radius:8px;background:#f1f5f9;color:#334155;font-size:14px;cursor:pointer">关 闭</button>
+<div id="contactMask" style="display:none;position:fixed;inset:0;background:rgba(5,4,10,.72);backdrop-filter:blur(6px);z-index:99;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeContact()">
+  <div style="background:#1a1526;border:1px solid rgba(230,210,190,.16);border-radius:20px;padding:24px;max-width:320px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.55)">
+    <div id="ctAvatar" style="width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;background:linear-gradient(135deg,#c9a876,#e0a3bd)"></div>
+    <div id="ctName" style="font-size:17px;font-weight:700;color:#eae4f0;margin-bottom:6px"></div>
+    <div id="ctContact" style="font-size:14px;color:#a79fb3;margin-bottom:14px;word-break:break-all"></div>
+    <button onclick="closeContact()" style="padding:8px 22px;border:none;border-radius:10px;background:rgba(255,255,255,.08);color:#eae4f0;font-size:14px;cursor:pointer;transition:.2s">关 闭</button>
   </div>
 </div>
 
@@ -208,12 +216,12 @@ async function icCheck(){
       } else {
         st.textContent = '⚠️ 开关表为空（请先执行数据库 SQL）';
       }
-      st.style.color = locked ? '#dc2626' : (arr && arr.length ? '#16a34a' : '#d97706');
+      st.style.color = locked ? '#f26d6d' : (arr && arr.length ? '#34d399' : '#e8c98a');
       document.getElementById('icLockBtn').disabled = locked;
       document.getElementById('icUnlockBtn').disabled = !locked;
     } else if(r.status === 404){
       document.getElementById('icStatus').textContent = '⚠️ 需要先在 Supabase 执行 SQL 建表';
-      document.getElementById('icStatus').style.color = '#d97706';
+      document.getElementById('icStatus').style.color = '#e8c98a';
     }
   }catch(e){}
 }
@@ -275,7 +283,7 @@ function render(orders){
     div.className = 'card';
     div.innerHTML = `
       <div class="top"><span class="time">${time}</span><span class="tag ${clsMap[o.status]}">${tagMap[o.status]||o.status}</span></div>
-      <div class="row"><b>款式：</b>${o.service} <span style="color:#f59e0b;font-weight:700">${priceOf(o.service)?fmt(priceOf(o.service)):''}</span></div>
+      <div class="row"><b>款式：</b>${o.service} <span style="color:#e8c98a;font-weight:700">${priceOf(o.service)?fmt(priceOf(o.service)):''}</span></div>
       <div class="row"><b>图案：</b>${o.style||'—'}</div>
       <div class="row"><b>说明：</b>${o.detail||'—'}</div>
       <div class="row"><b>联系方式：</b>${o.contact}</div>
@@ -386,12 +394,12 @@ if(localStorage.getItem('sb_token')) showAdmin(); else showLogin();
 
 /* ---- 用户管理 ---- */
 const AVATAR_COLORS = [
-  'linear-gradient(135deg,#f59e0b,#d97706)',
-  'linear-gradient(135deg,#ec4899,#f472b6)',
-  'linear-gradient(135deg,#06b6d4,#3b82f6)',
-  'linear-gradient(135deg,#10b981,#059669)',
-  'linear-gradient(135deg,#f43f5e,#ec4899)',
-  'linear-gradient(135deg,#f472b6,#be185d)'
+  'linear-gradient(135deg,#c9a876,#e8c98a)',
+  'linear-gradient(135deg,#e0a3bd,#c98ba6)',
+  'linear-gradient(135deg,#7fb3d5,#5b8db8)',
+  'linear-gradient(135deg,#5ec9a0,#3f9d7c)',
+  'linear-gradient(135deg,#a78bda,#7d63b8)',
+  'linear-gradient(135deg,#e8c98a,#e0a3bd)'
 ];
 function avatarStyle(name){
   let h = 0;
@@ -481,10 +489,10 @@ async function loadDraw(){
   else{
     document.getElementById('drawEmpty').style.display='none';
     list.innerHTML = es.map(e =>
-      '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:13px">' +
-      '<div style="font-weight:700;color:#0f172a">' + esc(e.name) + ' <span style="color:#94a3b8;font-weight:400">微信 ' + esc(e.wechat) + '</span></div>' +
-      '<div style="color:#94a3b8;font-size:12px;margin:4px 0 8px">' + String(e.created_at||'').replace('T',' ').slice(0,16) + ' 报名</div>' +
-      '<button onclick="winDraw(' + e.id + ',\'' + esc(e.name) + '\',\'' + esc(e.wechat) + '\',\'' + m + '\')" style="background:linear-gradient(120deg,#f59e0b,#d97706);color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🏆 设为本月中奖者</button>' +
+      '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:13px">' +
+      '<div style="font-weight:700;color:#eae4f0">' + esc(e.name) + ' <span style="color:#7d7591;font-weight:400">微信 ' + esc(e.wechat) + '</span></div>' +
+      '<div style="color:#7d7591;font-size:12px;margin:4px 0 8px">' + String(e.created_at||'').replace('T',' ').slice(0,16) + ' 报名</div>' +
+      '<button onclick="winDraw(' + e.id + ',\'' + esc(e.name) + '\',\'' + esc(e.wechat) + '\',\'' + m + '\')" style="background:linear-gradient(120deg,#c9a876,#e0a3bd);color:#0d0b14;border:none;padding:7px 16px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 6px 16px rgba(201,168,118,.25)">🏆 设为本月中奖者</button>' +
       '</div>').join('');
   }
   const r2 = await fetch(SUPABASE_URL + '/rest/v1/draw_winners?select=*&order=month.desc', {headers: h});
@@ -494,10 +502,10 @@ async function loadDraw(){
   if(!ws.length){ wl.innerHTML = '<div class="empty">还没有开过奖</div>'; }
   else{
     wl.innerHTML = ws.map(w =>
-      '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:13px">' +
-      '<div style="font-weight:700;color:#0f172a">' + esc(w.month) + ' <span style="color:#f59e0b">🎉 ' + esc(w.name) + '</span> <span style="color:#94a3b8;font-weight:400">微信 ' + esc(w.wechat) + '</span></div>' +
-      '<div style="color:#94a3b8;font-size:12px;margin:4px 0 0">' + String(w.created_at||'').replace('T',' ').slice(0,16) + '</div>' +
-      '<button onclick="delWin(' + w.id + ')" style="margin-top:8px;background:#fee2e2;color:#dc2626;border:none;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer">删除</button>' +
+      '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(230,210,190,.13);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:13px">' +
+      '<div style="font-weight:700;color:#eae4f0">' + esc(w.month) + ' <span style="color:#e8c98a">🎉 ' + esc(w.name) + '</span> <span style="color:#7d7591;font-weight:400">微信 ' + esc(w.wechat) + '</span></div>' +
+      '<div style="color:#7d7591;font-size:12px;margin:4px 0 0">' + String(w.created_at||'').replace('T',' ').slice(0,16) + '</div>' +
+      '<button onclick="delWin(' + w.id + ')" style="margin-top:8px;background:rgba(242,109,109,.12);color:#f26d6d;border:1px solid rgba(242,109,109,.25);padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer">删除</button>' +
       '</div>').join('');
   }
 }
