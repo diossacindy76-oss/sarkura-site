@@ -6,6 +6,15 @@
   <meta name="theme-color" content="#8f3e55">
   <title>Sarkura 工作室 | 吹风机卡定制</title>
   <meta name="description" content="Sarkura 工作室，做给同学的吹风机卡。体验版 9.9 元起，支持自定义用户名。微信：k638666798k。">
+  <script>
+    (function(){
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      function startAtTop(){ window.scrollTo(0, 0); }
+      startAtTop();
+      window.addEventListener('load', startAtTop, { once:true });
+    })();
+  </script>
   <style>
     :root{
       --ink:#242527;
@@ -83,7 +92,7 @@
       align-items:end;
       overflow:hidden;
       color:#fff;
-      background:#2c2526 url("brand_card.jpg") center 39% / cover no-repeat;
+      background:#eedfe8 url("hero-rabbit.jpg") center 38% / cover no-repeat;
     }
     .hero::before{
       content:"";
